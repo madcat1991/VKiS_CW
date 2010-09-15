@@ -1,0 +1,126 @@
+﻿<head>
+    <link rel="stylesheet" href="CSS\chat.css" type="text/css"/>
+</head>
+<body bgcolor="#FF5500">
+<h1>Девайс сетевой двухканальный прямого действия, оранжевый</h1>
+<button onclick='ws.send("POKE")'>Отправить некорректный пакет</button>
+
+<div id='chatLog'>
+</div>
+
+<input id='inputbox' type='text' style='width: 600px;' onkeypress='edit_keypress(event)'/>
+
+<script type="text/javascript">
+    var server_ip = "127.0.0.1";
+    
+    // утилиты
+    
+    window.$ = function(id) {
+        return document.getElementById(id); // йоу, теперь мы типа как jQuery, йоу!
+    };
+    
+    var rowcount = 0; // число строк таблицы в чате
+    var logg = function(cell1, cell2) { 
+        // раскраска строк в зебру
+        rowcount += 1;
+        var rowclass = '';
+        if (rowcount % 2 == 0)
+            rowclass = 'chatRow_even';
+        else
+            rowclass = 'chatRow_odd';
+        
+        var text = "";
+        if (!cell2) {
+            text = "<div class='chatString " + rowclass + "'>" + cell1 + "</div>";
+        } else {
+            text = "<div class='chatString " + rowclass + "'>\n" + 
+                   "  <div class='usernick'>" + cell1 + "</div>\n" + 
+                   "  <div class='messageBody'>" + cell2 + "</div\n>" + 
+                   "</div>\n";
+        }
+        $('chatLog').innerHTML = $('chatLog').innerHTML + text;
+        $('chatLog').scrollTop = $('chatLog').clientHeight;
+    };
+    
+    // общение с сервером - уровень пакетов/датаграмм
+    
+    var datagram_recieved = function (packet) {
+        /// я ОЧЕНЬ надеюсь, что packet содержит датаграмму целиком, 
+        /// а не первые N байт. Потому что как выдернуть остальные??
+        datagram = JSON.parse(packet);
+        
+        if (datagram.type == 'text')
+            text_message_recieved(datagram.sender, datagram.value);
+        else if (datagram.type == 'notify')
+            notification_recieved(datagram);
+    };
+    
+    
+    var send_datagram = function(datagram) { 
+        msg = JSON.stringify(datagram);
+        packet = msg;
+        window.ws.send(packet);
+    };
+    
+    // общение с сервером - уровень текстовых сообщений
+    var send_text_message = function (msg_text) {
+        datagram = {'type': 'text', 'value': msg_text};
+        send_datagram(datagram);
+    };
+    
+    // получение текстового сообщения
+    var text_message_recieved = function (sender, msg_text) { 
+        //время на клиенте
+        date = new Date();
+        clientTime = " (" + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds() + ")";
+        
+        logg("<b>" + sender + clientTime + ":</b>", msg_text);
+    };
+    
+    // системные сообщения
+    var notification_recieved = function (datagram) {
+        if (datagram.subtype == 'user_left')
+            logg("<i><b>" + datagram.user + "</b> has left.</i>");
+        if (datagram.subtype == 'user_joined')
+            logg("<i><b>" + datagram.user + "</b> has joined.</i>");
+    };
+    
+    // UI  
+    var edit_keypress = function (event) {
+        if (event.keyCode == 10 || event.keyCode == 13) {
+            if ($('inputbox').value != "") {
+                send_text_message($('inputbox').value);
+                $('inputbox').value = "";
+            }
+        }
+    };
+    
+    // настройка сокета
+    (function(){
+        if (!window.WebSocket) {
+            document.write("<h1>No websockets for you, sorry</h1>");
+            return;
+        }
+        
+        window.ws = new WebSocket("ws://" + server_ip + ":17600");
+        logg('Right after creation, ws.readyState=' + ws.readyState)
+        
+        ws.onopen = function() {
+            logg('OnOpen: ws.readyState=' + ws.readyState)
+        };
+        logg('After setting onopen, ws.readyState=' + ws.readyState)
+        
+        ws.onmessage = function (evt) { 
+            datagram_recieved(evt.data);
+        };
+        logg('After setting onmessage, ws.readyState=' + ws.readyState)
+        
+        ws.onclose = function() { 
+            logg('OnClose: ws.readyState=' + ws.readyState); 
+        };
+        logg('After setting onclose, ws.readyState=' + ws.readyState)
+        
+        $('inputbox').focus();
+    })();
+</script>
+</body>

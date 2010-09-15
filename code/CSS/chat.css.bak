@@ -1,0 +1,19 @@
+#chatLog
+{
+    width: 600px; 
+    height: 400px; 
+    overflow: auto; 
+    background-color: #FF8833;
+}
+.chatString
+{
+    vertical-align: baseline;
+}
+.usernick
+{
+    vertical-align: top;
+}
+.messageBody
+{
+    margin-left: 20px;
+}
