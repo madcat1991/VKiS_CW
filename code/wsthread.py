@@ -59,7 +59,7 @@ class WebSocketThread(threading.Thread):
             import pdb; pdb.set_trace()
             if e.errno == 32:
                 user = self.finduser(client)
-                print ("Monty> pipe error")
+                print ("pipe error")
 
     def recv_data(self, client, count):
         data = client.recv(count)
