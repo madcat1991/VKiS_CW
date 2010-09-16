@@ -8,7 +8,22 @@
 <div id='chatLog'>
 </div>
 
-<input id='inputbox' type='text' style='width: 600px;' onkeypress='edit_keypress(event)'/>
+<div id='drawingPanel'>
+    <div id='drawingPanel_tabs'>
+        <span class='tab_switcher_span active_tab' id='dp_tab_switch_public'>Общая доска для рисования</span>
+        <span class='tab_switcher_span inactive_tab' id='dp_tab_switch_private'>Составление графического сообщения</span>
+    </div>
+    <div id='drawing_public'>
+        <canvas class='drawing_canvas' width='500' height='320' id='public_canvas'></canvas>
+        <div class='draw_toolbar' id='public_draw_tools'>Тут будут инструменты рисования</div>
+    </div>
+    <div id='drawing_private'>
+        <canvas class='drawing_canvas' id='private_canvas'></canvas>
+        <div class='draw_toolbar' id='private_draw_tools'>Тут будут инструменты рисования и кнопка ОТПРАВИТЬ</div>
+    </div>
+</div>
+
+<input id='inputbox' type='text' onkeypress='edit_keypress(event)'/>
 
 <script type="text/javascript">
     var server_ip = "127.0.0.1";
@@ -20,6 +35,9 @@
     };
     
     var rowcount = 0; // число строк таблицы в чате
+    
+    // добавление строки в лог чата
+    // Использование: logg(служебное_сообщение) или logg(автор, сообщение)
     var logg = function(cell1, cell2) { 
         // раскраска строк в зебру
         rowcount += 1;
@@ -39,7 +57,7 @@
                    "</div>\n";
         }
         $('chatLog').innerHTML = $('chatLog').innerHTML + text;
-        $('chatLog').scrollTop = $('chatLog').clientHeight;
+        $('chatLog').scrollTop = $('chatLog').scrollHeight;
     };
     
     // общение с сервером - уровень пакетов/датаграмм
@@ -92,6 +110,58 @@
                 send_text_message($('inputbox').value);
                 $('inputbox').value = "";
             }
+        }
+    };
+    
+    $('drawing_public').style.display = 'block';
+    
+    var toggle_drawing_tabs = function (event) { 
+        if ($('drawing_public').style.display == 'block') {
+            $('drawing_public').style.display = 'none';
+            $('drawing_private').style.display = 'block';
+            $('dp_tab_switch_public').className = "tab_switcher_span inactive_tab";
+            $('dp_tab_switch_private').className = "tab_switcher_span active_tab";
+        } else {
+            $('drawing_public').style.display = 'block';
+            $('drawing_private').style.display = 'none';
+            $('dp_tab_switch_public').className = "tab_switcher_span active_tab";
+            $('dp_tab_switch_private').className = "tab_switcher_span inactive_tab";
+        }
+    };
+    
+    $('dp_tab_switch_private').onclick = toggle_drawing_tabs;
+    $('dp_tab_switch_public').onclick = toggle_drawing_tabs;
+    
+    // draaaaawing
+    
+    var public_context = $('public_canvas').getContext('2d');
+    
+    public_context.fillStyle = "rgb(255,0,0)";
+    public_context.strokeRect(30, 30, 50, 50);
+    
+    public_context.beginPath();
+    public_context.moveTo(10,10);
+    public_context.lineTo(120,60);
+    public_context.stroke();
+    
+    var currently_drawing = false;
+    $('public_canvas').onmousedown = function (event) {
+        var x, y;
+        x = event.x - event.target.offsetLeft; y = event.y - event.target.offsetTop;
+        currently_drawing = true;
+        public_context.beginPath();
+        public_context.moveTo(x,y);
+    };
+    $('public_canvas').onmouseup = function (event) {
+        currently_drawing = false;
+        public_context.stroke();
+    };
+    $('public_canvas').onmousemove = function (event) {
+        if (currently_drawing) {
+            var x, y;
+            x = event.x - event.target.offsetLeft; y = event.y - event.target.offsetTop;
+            public_context.lineTo(x,y);
+            public_context.stroke();
         }
     };
     
