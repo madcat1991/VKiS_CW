@@ -25,7 +25,7 @@ And even though I tried, it all fell apart <br/>
 What it meant to me will eventually be <br/>
 A memory of a time when
 
-**(Chorus:)**
+**(Chorus:)**<br/>
 I tried so hard and got so far <br/>
 But in the end it doesn't even matter <br/>
 I had to fall to lose it all <br/>
@@ -52,7 +52,7 @@ And even though I tried, it all fell apart <br/>
 What it meant to me will eventually be <br/>
 A memory of a time when
 
-**(Chorus:)**
+**(Chorus:)**<br/>
 I tried so hard and got so far <br/>
 But in the end it doesn't even matter <br/>
 I had to fall to lose it all <br/>
@@ -68,7 +68,7 @@ Pushed as far as I can go <br/>
 And for all this <br/>
 There's only one thing you should know
 
-**(Chorus:)**
+**(Chorus:)**<br/>
 I tried so hard and got so far <br/>
 But in the end it doesn't even matter <br/>
 I had to fall to lose it all <br/>
