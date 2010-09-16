@@ -1,6 +1,6 @@
 In The End
 ==========
-`Хочу UTF-8, и точка!`
+`В кривом разбиении куплетов на абзацы прошу винить elyrics.net`
 
 It starts with <br/>
 One thing I don't know why <br/>
