@@ -1,188 +1,49 @@
-High Voltage
-============
-
-
-
-<i>
-
-You know what I mean 
-
-You could put a label on a life, 
-
-Put a label on a lifestyle 
-
-</i>
-
-Sometimes...
-
-<i>
-
-You know 
-
-Put a label on how you wake up every morning 
-
-And go to bed at night 
-
-</i>
-
-*Hybrid*
-
-
-
-I've been diggin into crates ever since I was livin in space 
-
-Before the rat race, before monkeys had human traits 
-
-I mastered numerology and big bang theology 
-
-Performed lobotomies with telekinetic psychology 
-
-Invented the mic so I could start blessin it 
-
-Chin-checkin' kids to make my point like an impressionist 
-
-Many men have tried to shake us 
-
-But I twist mic cords in double helixes and show them what I'm made of 
-
-I buckle knees like leg braces 
-
-Cast the spell of instrumental-ness and all of you emcees who hate us 
-
-So you can try on, 
-
-Leave you without a shoulder to cry on 
-
-From now to infinity let icons be bygones 
-
-I fire bomb ghostly notes haunt this 
-
-I tried threats but moved on to a promise 
-
-I stomp shit with or without an accomplice 
-
-And run the gauntlet with whoever that wants this 
-
-
-
-**Chorus:** 
-
-
-
-*High Voltage*
-
-The unforgettable sound
-
-*High Voltage*
-
-Bringing you up and taking you down 
-
-*High Voltage*
-
-Coming at you from every side 
-
-*High Voltage*
-
-Making the rhythm and rhyme collide 
-
-
-
-Akira, I put a kink in the backbones of clones with microphones 
-
-Never satisfy my rhyme jones 
-
-Sprayin bright day over what you might say 
-
-My Blood type's Krylon- Technicolor type A 
-
-On highways ride with road rage 
-
-Cages of wind and cages of tin that bounce all around 
-
-*Surround sound*
-
-Devouring the scene 
-
-Subliminal gangrene paintings 
-
-Over while the same thing
-
-Sing song karaoke copy bullshit 
-
-Break bones verbally with sticks and stone tactics 
-
-Fourth dimension, combat convention 
-
-Write rhymes at ease while the track stands at attention 
-
-Meant to put you away with the pencil 
-
-Pistol, official, 16 line a rhyme missile 
-
-While you risk your all, I pick out all your flaws 
-
-Spin rah, blah blah blah, you can say you saw 
-
-
-
-**Chorus (2x)**
-
-
-
-<i>
-
-And like the rock and rap 
-
-You know what i mean 
-
-People act like you know 
-
-Wow that's a new invention 
-
-That shits ain't new 
-
-We're constantly evolving 
-
-It is constantly changing 
-
-</i>
-
-Sometimes...  
-
-<i>
-
-There's a lot of change 
-
-Everybody's always up with labels 
-
-There ain't no label for this shit 
-
-They're always gonna try to put a label on it 
-
-Try to create something 
-
-So they can water it down 
-
-</i>
-
-
-
-Sometimes I feel like a prophet 
-
-Misunderstood 
-
-Under the gun like a new disease 
-
-Sometimes I feel like a prophet 
-
-Misunderstood 
-
-Under the gun like a new disease 
-
-
-
-**Chorus (4x)**
-
-
-
-<i>You know what I mean, you can put a label on a lifestyle</i>
+Papercut
+========
+<br/>
+Why does it feel like night today? <br/>
+Something in here's not right today. <br/>
+Why am I so uptight today? <br/>
+Paranoia's all I got left <br/>
+I don't know what stressed me first <br/>
+Or how the pressure was fed <br/>
+But I know just what it feels like <br/>
+To have a voice in the back of my head <br/>
+It's like a face that I hold inside <br/>
+A face that awakes when I close my eyes <br/>
+A face watches every time I lie <br/>
+A face that laughs every time I fall <br/>
+(And watches everything) <br/>
+So I know that when it's time to sink or swim <br/>
+That the face inside is hearing me <br/>
+Right underneath my skin <br/>
+<br/>
+It's like I'm paranoid lookin' over my back <br/>
+It's like a whirlwind inside of my head <br/>
+It's like I can't stop what I'm hearing within <br/>
+It's like the face inside is right beneath my skin <br/>
+<br/>
+I know I've got a face in me <br/>
+Points out all my mistakes to me <br/>
+You've got a face on the inside too and <br/>
+Your paranoia's probably worse <br/>
+I don't know what set me off first but I know what I can't stand <br/>
+Everybody acts like the fact of the matter is <br/>
+I can't add up to what you can but <br/>
+Everybody has a face that they hold inside <br/>
+A face that awakes when I close my eyes <br/>
+A face watches every time they lie <br/>
+A face that laughs every time they fall <br/>
+(And watches everything) <br/>
+So you know that when it's time to sink or swim <br/>
+That the face inside is watching you too <br/>
+Right inside your skin <br/>
+<br/>
+Chorus <br/>
+<br/>
+The face inside is right beneath your skin (3x) <br/>
+<br/>
+The sun goes down <br/>
+I feel the light betray me (Repeat until end) <br/>
+<br/>
+Chorus (Repeat until end) 
