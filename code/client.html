@@ -23,7 +23,8 @@
     </div>
 </div>
 
-<input id='inputbox' type='text' onkeypress='edit_keypress(event)'/>
+<!--<input id='inputbox' type='text' onkeypress='edit_keypress(event)'/>-->
+<div id='inputbox' contenteditable onkeypress='edit_keypress(event)'>&nbsp;</div>
 
 <script type="text/javascript">
     var server_ip = "127.0.0.1";
@@ -106,9 +107,10 @@
     // UI  
     var edit_keypress = function (event) {
         if (event.keyCode == 10 || event.keyCode == 13) {
-            if ($('inputbox').value != "") {
-                send_text_message($('inputbox').value);
-                $('inputbox').value = "";
+            if ($('inputbox').innerHTML != "&nbsp;") {
+                send_text_message($('inputbox').innerHTML);
+                $('inputbox').innerHTML = "&nbsp;";
+                $('inputbox').focus();
             }
         }
     };
