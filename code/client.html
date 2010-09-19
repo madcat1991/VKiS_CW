@@ -5,8 +5,8 @@
 <h1>Девайс сетевой двухканальный прямого действия, оранжевый (0.46a)</h1>
 
 <div style='float: left'>
-    <div id='chatLog'>
-    </div>
+	<div id='userNickInfo'></div>
+    <div id='chatLog'></div>
     <!--<input id='inputbox' type='text' onkeypress='edit_keypress(event)'/>-->
     <div id='inputbox' contenteditable onkeypress='edit_keypress(event)'></div>
 </div>
@@ -100,10 +100,18 @@
     
     // системные сообщения
     var notification_recieved = function (datagram) {
-        if (datagram.subtype == 'user_left')
-            logg("<i><b>" + datagram.user + "</b> покинул конференцию.</i>");
-        if (datagram.subtype == 'user_joined')
-            logg("<i><b>" + datagram.user + "</b> присоединился к конференции.</i>");
+		switch (datagram.subtype)
+		{
+			case 'user_left':
+				logg("<i><b>" + datagram.user + "</b> покинул конференцию.</i>");
+				break;
+			case 'user_joined':
+				logg("<i><b>" + datagram.user + "</b> присоединился к конференции.</i>");
+				break;
+			case 'user_renamed':
+				logg("<i><b>" + datagram.user_old_nick + "</b> поменял ник на <b>" + datagram.user_new_nick + "</b></i>");
+				break;
+		}
     };
     
     // UI  
@@ -175,6 +183,34 @@
         }
     };
     
+	//переименование пользователя
+	function renameNickname(){
+		old_nick = localStorage.getItem('chat_nick');
+		var default_nick;
+		//проверка необходима для того, чтобы запретить возможность ввода пустого никнейма
+		if (old_nick == null || old_nick == '') {
+			default_nick = 'Участник #' + (new Date()).getMilliseconds()
+		}
+		else{	
+			default_nick = old_nick;
+		}
+		
+		nick = prompt('Введите ваш псевдоним:', default_nick);
+		if (nick == null || nick == '') nick = default_nick;
+		localStorage.setItem('chat_nick', nick);
+			
+        window.chat_nick = localStorage.getItem('chat_nick');
+		$('userNickInfo').innerHTML = "Your nickname is: " + chat_nick + " (<a href='#' onclick='renameNickname()'>Edit</a>)";
+		
+		//проверка необходима для того, чтобы запретить возможность ввода пустого никнейма
+		if (old_nick == null){
+			send_datagram({'type': 'set-name', 'new_name': chat_nick}); // M4а
+		}
+		else if ( old_nick != chat_nick ){
+			send_datagram({'type': 'set-name', 'new_name': chat_nick, 'old_name': old_nick}); // M4б
+		}
+	}
+	
     // настройка сокета
     (function(){
         if (!window.WebSocket) {
@@ -198,18 +234,20 @@
             
             // сообщаем серверу наш ник, чтобы стать участником чата
             // см. описание протокола, М4, пункт 4а 
-            
-            if (localStorage.getItem('chat_nick') == null) {
+            //проверка необходима для того, чтобы запретить возможность задания пустого никнейма нажатием f5
+            if (localStorage.getItem('chat_nick') == null ||
+				localStorage.getItem('chat_nick') == '') 
+			{
                 default_nick = 'Участник #' + (new Date()).getMilliseconds()
                 nick = prompt('Введите ваш псевдоним:', default_nick);
                 if (nick == null) nick = default_nick;
                 localStorage.setItem('chat_nick', nick);
             };
-            
+			
             window.chat_nick = localStorage.getItem('chat_nick');
+			$('userNickInfo').innerHTML = "Your nickname is: " + chat_nick + " (<a href='#' onclick='renameNickname()'>Edit</a>)";            
             send_datagram({'type': 'set-name', 'new_name': chat_nick}); // M4
 
-            
             $('inputbox').focus();
         };
         //logg('After setting onopen, ws.readyState=' + ws.readyState)

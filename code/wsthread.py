@@ -217,6 +217,14 @@ class WebSocketThread(threading.Thread):
                 this_user.nick = datagram['new_name']
                 self.broadcast({'type': 'notify', 'subtype': 'user_joined', 'user': datagram['new_name']})
             else:
-                pass # TODO : сменить ник и оповестить всех
+                this_user.nick = datagram['new_name']
+                self.broadcast(
+					{
+						'type': 'notify',
+						'subtype': 'user_renamed',
+						'user_new_nick': datagram['new_name'],
+						'user_old_nick': datagram['old_name']
+					}
+				)
                 
         return True
