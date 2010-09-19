@@ -6,4 +6,4 @@ class user:
     def __init__(self, socket, user_id):
         self.user_id = user_id
         self.socket = socket
-        self.nick = str(user_id)
+        self.nick = None

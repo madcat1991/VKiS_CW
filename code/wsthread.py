@@ -30,8 +30,8 @@ class WebSocketThread(threading.Thread):
         print ("Received connection ", self.details [ 0 ])
         self.handshake(self.channel)
         
-        self.broadcast({'type': 'notify', 'subtype': 'user_joined', 'user': str(self.this_user.nick)})
-        # TODO: отправить список юзеров в комнате, и присвоенное имя
+        #self.broadcast({'type': 'notify', 'subtype': 'user_joined', 'user': str(self.this_user.nick)})
+        # сейчас делается при обработке первого сообщения М4 от этого пользователя
         
         while True:
             connection_lives = self.interact(self.channel)
@@ -176,10 +176,11 @@ class WebSocketThread(threading.Thread):
         
     
     def broadcast(self, datagram):
-        """ отправка датаграммы всем-всем-всем """
+        """ отправка датаграммы всем-всем-всем участникам чата"""
         data = json.dumps(datagram)
         for user in self.websocket.users:
-            self.send_data(user.socket, data)
+            if user.nick is not None:
+                self.send_data(user.socket, data)
     
     def interact(self, client):
         """ цикл общения с клиентом 
@@ -192,13 +193,13 @@ class WebSocketThread(threading.Thread):
         try:
             data = self.recieve_websocket_string(client)
         except ConnectionClosedError:
-            print "//closed: #" + str(this_user.nick) + " has left"
-            self.broadcast({'type': 'notify', 'subtype': 'user_left', 'user': str(this_user.nick)})
+            print "//closed: #" + unicode(this_user.nick) + " has left"
+            self.broadcast({'type': 'notify', 'subtype': 'user_left', 'user': unicode(this_user.nick)})
             # TODO: broadcast (warning: will probably get err 10053 from
             # this very client
             return False
         except MalformedPacketError:
-            print "//malformed packet from #" + str(this_user.nick)
+            print "//malformed packet from #" + unicode(this_user.nick)
             return True
             
         print data
@@ -209,7 +210,13 @@ class WebSocketThread(threading.Thread):
             import pdb; pdb.set_trace();
         
         if datagram['type'] == 'text':
-            datagram['sender'] = str(this_user.nick)
+            datagram['sender'] = this_user.nick
             self.broadcast(datagram)
+        elif datagram['type'] == 'set-name':   # M4
+            if this_user.nick is None:
+                this_user.nick = datagram['new_name']
+                self.broadcast({'type': 'notify', 'subtype': 'user_joined', 'user': datagram['new_name']})
+            else:
+                pass # TODO : сменить ник и оповестить всех
                 
         return True

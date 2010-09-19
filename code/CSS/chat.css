@@ -1,14 +1,22 @@
 #chatLog
 {
-    float: left;
     width: 490px; 
+    max-width: 490px;
+    word-wrap: break-word;
     height: 350px; 
     overflow: auto; 
     background-color: #FF8833;
 }
 #inputbox
 {
-    width: 490px;
+    padding: 2px;
+    width: 486px;
+    max-width: 486px;
+    word-wrap: break-word;    
+    min-height: 20px;
+    max-height: 128px; /* 6 lines */
+    overflow: auto;
+    
     background-color: white;
 }
 

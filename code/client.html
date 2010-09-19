@@ -3,9 +3,12 @@
 </head>
 <body bgcolor="#FF5500">
 <h1>Девайс сетевой двухканальный прямого действия, оранжевый (0.46a)</h1>
-<button onclick='ws.send("POKE")'>Отправить некорректный пакет</button>
 
-<div id='chatLog'>
+<div style='float: left'>
+    <div id='chatLog'>
+    </div>
+    <!--<input id='inputbox' type='text' onkeypress='edit_keypress(event)'/>-->
+    <div id='inputbox' contenteditable onkeypress='edit_keypress(event)'></div>
 </div>
 
 <div id='drawingPanel'>
@@ -23,8 +26,7 @@
     </div>
 </div>
 
-<!--<input id='inputbox' type='text' onkeypress='edit_keypress(event)'/>-->
-<div id='inputbox' contenteditable onkeypress='edit_keypress(event)'>&nbsp;</div>
+
 
 <script type="text/javascript">
     var server_ip = "127.0.0.1";
@@ -99,21 +101,27 @@
     // системные сообщения
     var notification_recieved = function (datagram) {
         if (datagram.subtype == 'user_left')
-            logg("<i><b>" + datagram.user + "</b> has left.</i>");
+            logg("<i><b>" + datagram.user + "</b> покинул конференцию.</i>");
         if (datagram.subtype == 'user_joined')
-            logg("<i><b>" + datagram.user + "</b> has joined.</i>");
+            logg("<i><b>" + datagram.user + "</b> присоединился к конференции.</i>");
     };
     
     // UI  
     var edit_keypress = function (event) {
-        if (event.keyCode == 10 || event.keyCode == 13) {
-            if ($('inputbox').innerHTML != "&nbsp;") {
+        if (event.keyCode == 13 && !event.shiftKey) {
+            if ($('inputbox').innerHTML != "") {
                 send_text_message($('inputbox').innerHTML);
-                $('inputbox').innerHTML = "&nbsp;";
+                $('inputbox').innerHTML = ""; // тут внезапно теряется фокус
+                
+                $('inputbox').blur();  // хитро возвращаем фокус
                 $('inputbox').focus();
+                
+                event.preventDefault(); // не пускаем символ дальше
+                return false;
             }
         }
     };
+    
     
     $('drawing_public').style.display = 'block';
     
@@ -175,24 +183,45 @@
         }
         
         window.ws = new WebSocket("ws://" + server_ip + ":17600");
-        logg('Right after creation, ws.readyState=' + ws.readyState)
+        //logg('Right after creation, ws.readyState=' + ws.readyState)
         
         ws.onopen = function() {
-            logg('OnOpen: ws.readyState=' + ws.readyState)
+            logg('Подключение к серверу выполнено.');
+            
+            ws.onmessage = function (evt) { 
+                datagram_recieved(evt.data);
+            };
+            
+             ws.onclose = function() { 
+                logg('Сервер разорвал соединение.'); 
+            };
+            
+            // сообщаем серверу наш ник, чтобы стать участником чата
+            // см. описание протокола, М4, пункт 4а 
+            
+            if (localStorage.getItem('chat_nick') == null) {
+                default_nick = 'Участник #' + (new Date()).getMilliseconds()
+                nick = prompt('Введите ваш псевдоним:', default_nick);
+                if (nick == null) nick = default_nick;
+                localStorage.setItem('chat_nick', nick);
+            };
+            
+            window.chat_nick = localStorage.getItem('chat_nick');
+            send_datagram({'type': 'set-name', 'new_name': chat_nick}); // M4
+
+            
+            $('inputbox').focus();
         };
-        logg('After setting onopen, ws.readyState=' + ws.readyState)
+        //logg('After setting onopen, ws.readyState=' + ws.readyState)
         
-        ws.onmessage = function (evt) { 
-            datagram_recieved(evt.data);
-        };
-        logg('After setting onmessage, ws.readyState=' + ws.readyState)
+        
+        //logg('After setting onmessage, ws.readyState=' + ws.readyState)
         
         ws.onclose = function() { 
-            logg('OnClose: ws.readyState=' + ws.readyState); 
+            logg('Невозможно подключиться к серверу.'); 
         };
-        logg('After setting onclose, ws.readyState=' + ws.readyState)
+        //logg('After setting onclose, ws.readyState=' + ws.readyState)
         
-        $('inputbox').focus();
     })();
 </script>
 </body>
