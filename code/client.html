@@ -2,10 +2,10 @@
     <link rel="stylesheet" href="CSS\chat.css" type="text/css"/>
 </head>
 <body bgcolor="#FF5500">
-<h1>Девайс сетевой двухканальный прямого действия, оранжевый (0.46a)</h1>
+<h1>Девайс сетевой двухканальный прямого действия, оранжевый (0.49а)</h1>
 
 <div style='float: left'>
-	<div id='userNickInfo'></div>
+    <div id='userNickInfo'></div>
     <div id='chatLog'></div>
     <!--<input id='inputbox' type='text' onkeypress='edit_keypress(event)'/>-->
     <div id='inputbox' contenteditable onkeypress='edit_keypress(event)'></div>
@@ -70,10 +70,14 @@
         /// а не первые N байт. Потому что как выдернуть остальные??
         datagram = JSON.parse(packet);
         
-        if (datagram.type == 'text')
-            text_message_recieved(datagram.sender, datagram.value);
-        else if (datagram.type == 'notify')
-            notification_recieved(datagram);
+        switch (datagram.type) {
+            case 'text':
+                text_message_recieved(datagram.sender, datagram.value);
+                break;
+            case 'notify':
+                notification_recieved(datagram);
+                break;
+        }
     };
     
     
@@ -100,18 +104,18 @@
     
     // системные сообщения
     var notification_recieved = function (datagram) {
-		switch (datagram.subtype)
-		{
-			case 'user_left':
-				logg("<i><b>" + datagram.user + "</b> покинул конференцию.</i>");
-				break;
-			case 'user_joined':
-				logg("<i><b>" + datagram.user + "</b> присоединился к конференции.</i>");
-				break;
-			case 'user_renamed':
-				logg("<i><b>" + datagram.user_old_nick + "</b> поменял ник на <b>" + datagram.user_new_nick + "</b></i>");
-				break;
-		}
+        switch (datagram.subtype)
+        {
+            case 'user_left':
+                logg("<i><b>" + datagram.user + "</b> покинул конференцию.</i>");
+                break;
+            case 'user_joined':
+                logg("<i><b>" + datagram.user + "</b> присоединился к конференции.</i>");
+                break;
+            case 'user_renamed':
+                logg("<i><b>" + datagram.old_nick + "</b> теперь известен как <b>" + datagram.new_nick + "</b></i>");
+                break;
+        }
     };
     
     // UI  
@@ -123,10 +127,10 @@
                 
                 $('inputbox').blur();  // хитро возвращаем фокус
                 $('inputbox').focus();
-                
-                event.preventDefault(); // не пускаем символ дальше
-                return false;
             }
+            
+            event.preventDefault(); // не пускаем символ дальше
+            return false;
         }
     };
     
@@ -183,34 +187,20 @@
         }
     };
     
-	//переименование пользователя
-	function renameNickname(){
-		old_nick = localStorage.getItem('chat_nick');
-		var default_nick;
-		//проверка необходима для того, чтобы запретить возможность ввода пустого никнейма
-		if (old_nick == null || old_nick == '') {
-			default_nick = 'Участник #' + (new Date()).getMilliseconds()
-		}
-		else{	
-			default_nick = old_nick;
-		}
-		
-		nick = prompt('Введите ваш псевдоним:', default_nick);
-		if (nick == null || nick == '') nick = default_nick;
-		localStorage.setItem('chat_nick', nick);
-			
+    //переименование пользователя
+    function renameNickname(){        
+        var nick = prompt('Введите ваш псевдоним:', chat_nick);
+        if (nick == null || nick == '') {
+            return; // null - кнопка Cancel, а пустой ник нам не нужен
+        }
+        localStorage.setItem('chat_nick', nick);
+            
         window.chat_nick = localStorage.getItem('chat_nick');
-		$('userNickInfo').innerHTML = "Your nickname is: " + chat_nick + " (<a href='#' onclick='renameNickname()'>Edit</a>)";
-		
-		//проверка необходима для того, чтобы запретить возможность ввода пустого никнейма
-		if (old_nick == null){
-			send_datagram({'type': 'set-name', 'new_name': chat_nick}); // M4а
-		}
-		else if ( old_nick != chat_nick ){
-			send_datagram({'type': 'set-name', 'new_name': chat_nick, 'old_name': old_nick}); // M4б
-		}
-	}
-	
+        $('userNickInfo').innerHTML = "Вас зовут <b>" + chat_nick + "</b> (<a href='#' onclick='renameNickname()'>сменить ник</a>)";
+        
+        send_datagram({'type': 'set-name', 'new_name': chat_nick}); // Сервер поймет это как M4б, т.к. юзер уже имеет имя
+    }
+    
     // настройка сокета
     (function(){
         if (!window.WebSocket) {
@@ -234,18 +224,17 @@
             
             // сообщаем серверу наш ник, чтобы стать участником чата
             // см. описание протокола, М4, пункт 4а 
-            //проверка необходима для того, чтобы запретить возможность задания пустого никнейма нажатием f5
-            if (localStorage.getItem('chat_nick') == null ||
-				localStorage.getItem('chat_nick') == '') 
-			{
+            if (localStorage.getItem('chat_nick') == null) 
+            {
                 default_nick = 'Участник #' + (new Date()).getMilliseconds()
                 nick = prompt('Введите ваш псевдоним:', default_nick);
-                if (nick == null) nick = default_nick;
+                if (nick == null || nick == '') nick = default_nick;
                 localStorage.setItem('chat_nick', nick);
             };
-			
+            
             window.chat_nick = localStorage.getItem('chat_nick');
-			$('userNickInfo').innerHTML = "Your nickname is: " + chat_nick + " (<a href='#' onclick='renameNickname()'>Edit</a>)";            
+            // далее в сессии используем chat_nick, а не localStorage
+            $('userNickInfo').innerHTML = "Вас зовут <b>" + chat_nick + "</b> (<a href='#' onclick='renameNickname()'>сменить ник</a>)";            
             send_datagram({'type': 'set-name', 'new_name': chat_nick}); // M4
 
             $('inputbox').focus();

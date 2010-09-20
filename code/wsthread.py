@@ -212,19 +212,21 @@ class WebSocketThread(threading.Thread):
         if datagram['type'] == 'text':
             datagram['sender'] = this_user.nick
             self.broadcast(datagram)
-        elif datagram['type'] == 'set-name':   # M4
+        elif datagram['type'] == 'set-name':   # M4 
+            # TODO : проверить, занят ли ник?
             if this_user.nick is None:
                 this_user.nick = datagram['new_name']
                 self.broadcast({'type': 'notify', 'subtype': 'user_joined', 'user': datagram['new_name']})
             else:
+                old_nick = this_user.nick
                 this_user.nick = datagram['new_name']
                 self.broadcast(
-					{
-						'type': 'notify',
-						'subtype': 'user_renamed',
-						'user_new_nick': datagram['new_name'],
-						'user_old_nick': datagram['old_name']
-					}
-				)
+                    {
+                        'type': 'notify',
+                        'subtype': 'user_renamed',
+                        'new_nick': datagram['new_name'],
+                        'old_nick': old_nick 
+                    }
+                )
                 
         return True
