@@ -23,11 +23,24 @@
                 </div>
                 <div id='drawing_public'>
                     <canvas class='drawing_canvas' width='500' height='320' id='public_canvas'></canvas>
-                    <div class='draw_toolbar' id='public_draw_tools'>Тут будут инструменты рисования</div>
+                    <div class='draw_toolbar' id='public_draw_tools'>
+                        <span class='button button_pencil'>Pen</span>
+                        <span class='button button_line'>Line</span>
+                        <span class='color_selectors'></span>
+                        <span class='button button_clearall'>Clear All</span>
+                        <span id='last_public_draw'></span>
+                    </div>
                 </div>
                 <div id='drawing_private'>
                     <canvas class='drawing_canvas' id='private_canvas'></canvas>
-                    <div class='draw_toolbar' id='private_draw_tools'>Тут будут инструменты рисования и кнопка ОТПРАВИТЬ</div>
+                    <div class='draw_toolbar' id='private_draw_tools'>
+                        <span class='button button_pencil'>Pen</span>
+                        <span class='button button_line'>Line</span>
+                        <span class='color_selectors'></span>
+                        <span class='button button_clearall'>Clear All</span>
+                        <span id='last_public_draw'></span>
+                         и кнопка ОТПРАВИТЬ
+                    </div>
                 </div>
             </div>
         </td>

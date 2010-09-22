@@ -5,7 +5,7 @@ import user
 import random
 import datetime
 
-LAST_N_MESSAGES_MAX_COUNT = 10
+LAST_N_MESSAGES_MAX_COUNT = 5
 
 class WebSocket():
 
@@ -13,21 +13,22 @@ class WebSocket():
     users=[]
     server=0
 
-    def saveLastMessage(self, datagram):
+    def save_last_message(self, datagram):
         """ сохранение последнего полученного сообщения в N последних """
-        self.lastNMessages.append({'sender': datagram['sender'], 'value': datagram['value'], 'time': datetime.datetime.now().strftime('%H:%M:%S')})
-        if len(self.lastNMessages) > LAST_N_MESSAGES_MAX_COUNT:
-            self.lastNMessages = self.lastNMessages[1:]
+        self.last_n_messages.append({'sender': datagram['sender'], 'value': datagram['value'], 'time': datetime.datetime.now().strftime('%H:%M:%S')})
+        if len(self.last_n_messages) > LAST_N_MESSAGES_MAX_COUNT:
+            self.last_n_messages = self.last_n_messages[1:]
 
     
     def __init__(self, address, port, connections, server):
         #последние N сообщение
-        self.lastNMessages = []
+        self.last_n_messages = []
+        self.public_picture_history = []
         
         self.server = server
         server = socket.socket ( socket.AF_INET, socket.SOCK_STREAM )
         server.bind ( ( address, port ) )
-        #server.bind(address + ":" + str(port))
+        
         server.listen ( connections )
         print "Yo, server here"
         while True:

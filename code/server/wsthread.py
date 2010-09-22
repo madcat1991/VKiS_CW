@@ -118,39 +118,7 @@ class WebSocketThread(threading.Thread):
             "Sec-WebSocket-Location: ws://" + headers['Host'] + requested_resource + 
             "\r\n\r\n" + md5hash)
         client.send(our_handshake)
-
-    def recieve_length_prefixed_data(self, client):
-        """ чтение из сокета строки данных, префиксированной длиной этой строки.
-            возвращает строку данных.
-            выбрасывает исключения ConnectionClosedError и MalformedPacketError.
-            Более не используется, но выкидывать жалко.
-            Да-да, я знаю, что для этого и нужны VCS.
-            Да-да, я уже жалею, что выбрал простую общую папку в Dropbox.
-        """
-        # а может к черту префиксирование длиной? читаем, пока не встретим 0xFF...
-        # ага, по одному байту читаем что ли?
-        # нужен буфер
-        # или пофиг? читаем по одному байту, полагаемся на буфер сокета?
-        # и выполняем тысячу конкатенаций на килобайтный пакет?
-        data_prefix = self.recv_data(client, 7)[1:] # строка "\x0065536-" влезает в 6 символов.
-        if len(data_prefix) == 0:
-            raise ConnectionClosedError
-        
-        try:
-            # длина данных идет перед символом "-"
-            data_length = int(data_prefix[:data_prefix.find('-')])
-        except:
-            #import pdb; pdb.set_trace()
-            raise MalformedPacketError
-        
-        data_prefetched = data_prefix[data_prefix.find('-')+1:]
-        
-        data_rest = self.recv_data(client, data_length + 1) # +1 из-за символа-терминатора WebSockets
-        if len(data_rest) == 0:
-            raise ConnectionClosedError
-        data = data_prefetched + data_rest
-        
-        return data
+    
         
     def recieve_websocket_string(self, client):
         """ чтение строки, отправленной веб-сокетом (в начале строки 0x00, в конце 0xFF).
@@ -220,16 +188,19 @@ class WebSocketThread(threading.Thread):
         
         if datagram['type'] == 'text':          #M1  
             datagram['sender'] = this_user.nick
-            self.websocket.saveLastMessage(datagram)
+            self.websocket.save_last_message(datagram)
             self.broadcast(datagram)
         elif datagram['type'] == 'set-name':    #M4 
             # TODO : проверить, занят ли ник?
             if this_user.nick is None:
+                # приветствуем нового участника!
                 this_user.nick = datagram['new_name']
                 self.broadcast({'type': 'notify', 'subtype': 'user_joined', 'user': datagram['new_name']})
                 #отправка последних N сообщений новому пользователю
-                if len(self.websocket.lastNMessages) > 0:
-                    self.send_private({'type': 'notify', 'subtype': 'last_messages', 'messages':self.websocket.lastNMessages}, this_user)
+                if len(self.websocket.last_n_messages) > 0:
+                    self.send_private({'type': 'notify', 'subtype': 'last_messages', 'messages': self.websocket.last_n_messages}, this_user)
+                # отправка истории рисования на публичной доске
+                self.send_private({'type': 'public_drawing', 'commands': self.websocket.public_picture_history}, this_user)
             else:
                 old_nick = this_user.nick
                 this_user.nick = datagram['new_name']
@@ -243,7 +214,14 @@ class WebSocketThread(threading.Thread):
                 )
         elif datagram['type'] == 'public_drawing': #M7
             datagram['sender'] = this_user.nick
-            # TODO : сохранять историю рисования?
             self.broadcast(datagram, except_user=this_user)
+            
+            self.websocket.public_picture_history.extend(datagram['commands'])
+            if 'clearall' in datagram['commands']:
+                self.websocket.public_picture_history = []
+            else:
+                datagram['commands'] = []
+            # отправляем этому же юзеру, чтобы он понял, что сообщение дошло
+            self.send_private(datagram, this_user)
                 
         return True

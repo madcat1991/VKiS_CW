@@ -64,6 +64,7 @@ var prepare_canvas = function (canvas, name) {
         var tool = this;
         this.name = 'pencil';
         var context = canvas.temp_context;
+        
         this.started = false;
         
         this.prev_pos = {'x': -1, 'y': -1};
@@ -96,10 +97,94 @@ var prepare_canvas = function (canvas, name) {
         return tool;
     }; // end pencil
     
+    canvas.tool_set.line = function() { 
+        var tool = this;
+        this.name = 'line';
+        var context = canvas.temp_context;
+        
+        this.started = false;
+        
+        this.prev_pos = {'x': -1, 'y': -1};
+        
+        this.mousedown = function (ev) {
+            tool.started = true;
+            tool.prev_pos = {'x': ev._x, 'y': ev._y};
+        };
+        
+        this.mousemove = function (ev) {
+            if (tool.started) {
+                context.clearRect(0, 0, canvas.temp_element.width, canvas.temp_element.height);
+                
+                context.beginPath();
+                context.moveTo(tool.prev_pos.x, tool.prev_pos.y);
+                context.lineTo(ev._x, ev._y);
+                context.stroke();
+            }
+        };
+        
+        this.mouseup = function (ev) {
+            if (tool.started) {
+                tool.mousemove(ev);
+                tool.started = false;
+                var new_pos = {'x': ev._x, 'y': ev._y};
+                canvas.append_to_history({'p1': tool.prev_pos, 'p2': new_pos});
+                canvas.img_update();
+            }
+        };
+        
+        return tool;
+    }; // end line
+    
+    // панель инструментов
+    for (var toolname in canvas.tool_set) {
+        (function (tool_name) {
+            var tool_buttons = canvas.toolbar.getElementsByClassName('button_' + tool_name);
+            if (0 in tool_buttons) {
+                var tool_button = tool_buttons[0];
+                tool_button.onclick = function () {
+                    canvas.user_tool = new canvas.tool_set[tool_name]();
+                };
+            }
+         }
+        )(toolname);
+    }
+    
+    
+    // выбор цвета
+    var color_selectors_span = canvas.toolbar.getElementsByClassName('color_selectors')[0];
+    var available_colors = ['#000000', '#FF0000', '#00FF00', '#0000FF'];
+    for (var color_index in available_colors) {
+        (function (color) {
+            var color_btn = document.createElement('span');
+            color_btn.style.backgroundColor = color_btn.style.color = color;
+            color_btn.className = 'color_selector_button';
+            color_btn.innerHTML = 'W'
+            color_btn.onclick = function () {
+                canvas.user_color = color;
+                canvas.temp_context.fillStyle = canvas.user_color;
+                canvas.temp_context.strokeStyle = canvas.user_color;
+            };
+            
+            color_selectors_span.appendChild(color_btn);
+        }
+        )(available_colors[color_index]);
+    }
+    
+    // кнопка "фтопку"
+    var button_clearall = canvas.toolbar.getElementsByClassName('button_clearall')[0];
+    if (button_clearall) {
+        button_clearall.onclick = function () {
+            canvas.context.clearRect(0, 0, canvas.element.width, canvas.element.height);
+            var datagram = {'type': 'public_drawing', 'commands': ['clearall',]};
+            send_datagram(datagram);
+        }
+    }
     
     // выбранные в данный момент
     canvas.user_tool = new canvas.tool_set['pencil']();
-    canvas.user_color = "rgb(0,0,0)";
+    canvas.user_color = "#000000";
+    canvas.temp_context.fillStyle = canvas.user_color;
+    canvas.temp_context.strokeStyle = canvas.user_color;
     
     canvas.mouse_handler = function (event) {
         if (event.layerX || event.layerX == 0) { // Firefox
@@ -123,16 +208,18 @@ var prepare_canvas = function (canvas, name) {
     canvas.temp_element.addEventListener('mousemove', canvas.mouse_handler, false);
     canvas.temp_element.addEventListener('mouseup',   canvas.mouse_handler, false);
     
-    canvas.temp_context.fillStyle = canvas.user_color;
-    canvas.temp_context.strokeStyle = canvas.user_color;
-    
     canvas.execute_command = function (hist_item) {
         // при интерпретации входящих команд рисуем сразу на основном canvas
         canvas.context.fillStyle = hist_item.color;
         canvas.context.strokeStyle = hist_item.color;
         
+        if (hist_item == 'clearall') {
+            canvas.context.clearRect(0, 0, canvas.element.width, canvas.element.height);
+            return;
+        }
+        
         switch (hist_item.tool) {
-            case 'pen':
+            case 'line':
             case 'pencil':
                 canvas.context.beginPath();
                 canvas.context.moveTo(hist_item.param.p1.x, hist_item.param.p1.y);
@@ -164,26 +251,6 @@ window.addEventListener('load', function () {
         var canvas = canvases[i];
         canvas.temp_element.width = canvas.temp_element.style.width = canvas.element.width = 500;
         canvas.temp_element.height = canvas.temp_element.style.height = canvas.element.height = 320;
-        /*var public_context = canvas.temp_context;
-        
-        public_context.fillStyle = "rgb(255,0,0)";
-        public_context.strokeStyle = "rgb(255,0,0)";
-        public_context.strokeRect(10+30, 30, 50, 50);
-
-        public_context.beginPath();
-        public_context.moveTo(10+10,10);
-        public_context.lineTo(10+120,60);
-        public_context.stroke();
-        
-        public_context = canvas.context;
-        
-        public_context.fillStyle = "rgb(255,0,0)";
-        public_context.strokeRect(30, 30, 50, 50);
-
-        public_context.beginPath();
-        public_context.moveTo(10,10);
-        public_context.lineTo(120,60);
-        public_context.stroke();*/
     }
 });
     

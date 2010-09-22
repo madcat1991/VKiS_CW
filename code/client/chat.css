@@ -119,3 +119,35 @@ A[href="#"]
     height:30px;
     background-color: yellow;
 }
+
+.button
+{
+    height: 26px;
+    width: 26px;
+    border: solid 1px green;
+    background-color: yellow;
+    cursor: hand;
+    margin: 1px;
+}
+.button:hover
+{
+    background-color: red;
+}
+
+.button_pencil
+{
+    content: "P"; /* doesn't work :-( */
+}
+
+.button_line 
+{
+}
+
+.color_selector_button
+{
+    height: 20px;
+    min-width: 20px;
+    border: solid 1px green;
+    cursor: hand;
+    margin: 1px;
+}

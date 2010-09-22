@@ -68,7 +68,12 @@ var datagram_recieved = function (packet) {
             break;
         case 'public_drawing':
             canvases.public_canvas.execute_command_sequence(datagram.commands);
-            logg('<b>' + datagram.sender + '</b> что-то нарисовал');
+            if (datagram.sender) {
+                $('last_public_draw').innerHTML = "Last: <b>" + datagram.sender + "</b> (" + getLocalTime() + ")";
+                if (datagram.commands.indexOf('clearall') >= 0) {
+                    logg("<b>" + datagram.sender + "</b> очистил общую доску для рисования");
+                }
+            }
             break;
     }
 };
