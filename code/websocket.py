@@ -1,7 +1,11 @@
+﻿# coding: utf-8
 import socket
 import wsthread
 import user
 import random
+import datetime
+
+LAST_N_MESSAGES_MAX_COUNT = 10
 
 class WebSocket():
 
@@ -9,7 +13,17 @@ class WebSocket():
     users=[]
     server=0
 
+    def saveLastMessage(self, datagram):
+        """ сохранение последнего полученного сообщения в N последних """
+        self.lastNMessages.append({'sender': datagram['sender'], 'value': datagram['value'], 'time': datetime.datetime.now().strftime('%H:%M:%S')})
+        if len(self.lastNMessages) > LAST_N_MESSAGES_MAX_COUNT:
+            self.lastNMessages = self.lastNMessages[1:]
+
+    
     def __init__(self, address, port, connections, server):
+        #последние N сообщение
+        self.lastNMessages = []
+        
         self.server = server
         server = socket.socket ( socket.AF_INET, socket.SOCK_STREAM )
         server.bind ( ( address, port ) )

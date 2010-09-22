@@ -72,7 +72,8 @@
         
         switch (datagram.type) {
             case 'text':
-                text_message_recieved(datagram.sender, datagram.value);
+                //время на клиенте
+                text_message_recieved(datagram.sender, datagram.value, getLocalTime());
                 break;
             case 'notify':
                 notification_recieved(datagram);
@@ -80,6 +81,16 @@
         }
     };
     
+    function getLocalTime(){
+        var time = new Date();
+        var hours = time.getHours();
+        hours=((hours < 10) ? "0" : "") + hours;
+        var minutes = time.getMinutes();
+        minutes=((minutes < 10) ? "0" : "") + minutes;
+        var seconds = time.getSeconds();
+        seconds=((seconds < 10) ? "0" : "") + seconds;
+        return hours + ":" + minutes + ":" + seconds;
+    };
     
     var send_datagram = function(datagram) { 
         msg = JSON.stringify(datagram);
@@ -94,12 +105,8 @@
     };
     
     // получение текстового сообщения
-    var text_message_recieved = function (sender, msg_text) { 
-        //время на клиенте
-        date = new Date();
-        clientTime = " (" + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds() + ")";
-        
-        logg("<b>" + sender + clientTime + ":</b>", msg_text);
+    var text_message_recieved = function (sender, msg_text, time) { 
+        logg("<b>" + sender + " (" + time + ") " + ":</b>", msg_text);
     };
     
     // системные сообщения
@@ -114,6 +121,12 @@
                 break;
             case 'user_renamed':
                 logg("<i><b>" + datagram.old_nick + "</b> теперь известен как <b>" + datagram.new_nick + "</b></i>");
+                break;
+            case 'last_messages':
+                logg("<i>Последние сообщения в чате:</i>");
+                for(i in datagram.messages){
+                    text_message_recieved(datagram.messages[i].sender, datagram.messages[i].value, datagram.messages[i].time); 
+                }
                 break;
         }
     };

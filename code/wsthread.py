@@ -5,6 +5,7 @@ import time
 import re
 import json
 
+
 # штука для преобразования чисел в строку байтов в big-endian
 from struct import Struct
 big_endian_uint = Struct('>L')
@@ -14,10 +15,11 @@ class ConnectionClosedError(Exception):
     pass
 class MalformedPacketError(Exception):
     pass
+    
+
 
 # поток, общающийся с одним клиентом
 class WebSocketThread(threading.Thread):
-
     def __init__ ( self, channel, details, websocket ):
         print "Thread ctor here=)"
         self.channel = channel
@@ -172,8 +174,7 @@ class WebSocketThread(threading.Thread):
                 break
             str += byte
         return str.decode('utf-8', 'ignore') # я не знаю что значит ignore=)
-            
-        
+                
     
     def broadcast(self, datagram):
         """ отправка датаграммы всем-всем-всем участникам чата"""
@@ -181,7 +182,14 @@ class WebSocketThread(threading.Thread):
         for user in self.websocket.users:
             if user.nick is not None:
                 self.send_data(user.socket, data)
-    
+            
+    def send_private(self, datagram, user):
+        """ отправка датаграммы отдельному пользователю(user) """
+        data = json.dumps(datagram)
+        self.send_data(user.socket, data)
+            
+   
+   
     def interact(self, client):
         """ цикл общения с клиентом 
             возвращает: True, если общение может продолжаться;
@@ -209,14 +217,18 @@ class WebSocketThread(threading.Thread):
         except Exception as e:
             import pdb; pdb.set_trace();
         
-        if datagram['type'] == 'text':
+        if datagram['type'] == 'text':          #M1  
             datagram['sender'] = this_user.nick
+            self.websocket.saveLastMessage(datagram)
             self.broadcast(datagram)
-        elif datagram['type'] == 'set-name':   # M4 
+        elif datagram['type'] == 'set-name':    #M4 
             # TODO : проверить, занят ли ник?
             if this_user.nick is None:
                 this_user.nick = datagram['new_name']
                 self.broadcast({'type': 'notify', 'subtype': 'user_joined', 'user': datagram['new_name']})
+                #отправка последних N сообщений новому пользователю
+                if len(self.websocket.lastNMessages) > 0:
+                    self.send_private({'type': 'notify', 'subtype': 'last_messages', 'messages':self.websocket.lastNMessages}, this_user)
             else:
                 old_nick = this_user.nick
                 this_user.nick = datagram['new_name']
