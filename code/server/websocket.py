@@ -10,7 +10,6 @@ LAST_N_MESSAGES_MAX_COUNT = 5
 class WebSocket():
 
     uid=0
-    users=[]
     server=0
 
     def save_last_message(self, datagram):
@@ -24,6 +23,9 @@ class WebSocket():
         #последние N сообщение
         self.last_n_messages = []
         self.public_picture_history = []
+        
+        #пользователи
+        self.users=[]
         
         self.server = server
         server = socket.socket ( socket.AF_INET, socket.SOCK_STREAM )

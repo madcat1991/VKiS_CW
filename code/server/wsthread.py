@@ -49,6 +49,12 @@ class WebSocketThread(threading.Thread):
             if user.socket == client:
                 return user
         return 0
+        
+    def get_users_list(self):
+        result = []
+        for user in self.websocket.users:
+            result.append(user.nick)
+        return result
 
     def send_data(self, client, str):
         str = b"\x00" + str.encode('utf-8') + b"\xff"
@@ -197,8 +203,7 @@ class WebSocketThread(threading.Thread):
                 this_user.nick = datagram['new_name']
                 self.broadcast({'type': 'notify', 'subtype': 'user_joined', 'user': datagram['new_name']})
                 #отправка последних N сообщений новому пользователю
-                if len(self.websocket.last_n_messages) > 0:
-                    self.send_private({'type': 'notify', 'subtype': 'last_messages', 'messages': self.websocket.last_n_messages}, this_user)
+                self.send_private({'type': 'notify', 'subtype': 'last_messages', 'messages': self.websocket.last_n_messages}, this_user)
                 # отправка истории рисования на публичной доске
                 self.send_private({'type': 'public_drawing', 'commands': self.websocket.public_picture_history}, this_user)
             else:
@@ -223,5 +228,7 @@ class WebSocketThread(threading.Thread):
                 datagram['commands'] = []
             # отправляем этому же юзеру, чтобы он понял, что сообщение дошло
             self.send_private(datagram, this_user)
-                
+        elif datagram['type'] == 'roommates': #M5
+            datagram['list'] = self.get_users_list()
+            self.send_private(datagram, this_user)
         return True

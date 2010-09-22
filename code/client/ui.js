@@ -79,14 +79,16 @@ function renameNickname(){
     send_datagram({'type': 'set-name', 'new_name': chat_nick}); // Сервер поймет это как M4б, т.к. юзер уже имеет имя
 }
 
+//обновление списка пользователей
+function updateUserList(){
+    send_datagram({'type': 'roommates'});
+}
+
 var toggle_people_list = function() { 
     if ($('list_of_people').style.display == 'none') {
         $('list_of_people').style.display = 'block';
         $('list_of_people').style.left = 227;
         $('list_of_people').style.top = 99; // неструктуррно. Пофиг.
-        $('list_of_people').innerHTML = "";
-        // заполнить список людей списком людей
-        $('list_of_people').innerHTML = "тут будет список людей";
     } else {
         $('list_of_people').style.display = 'none';
     }

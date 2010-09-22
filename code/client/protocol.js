@@ -1,4 +1,7 @@
-﻿// настройка сокета
+﻿//id интервала
+var intervalId=""
+
+// настройка сокета
 var setup_socket = function() {
     if (!window.WebSocket) {
         document.write("<h1>No websockets for you, sorry</h1>");
@@ -17,6 +20,7 @@ var setup_socket = function() {
         
          ws.onclose = function() { 
             logg('Сервер разорвал соединение.'); 
+            clearInterval(intervalId);
         };
         
         // сообщаем серверу наш ник, чтобы стать участником чата
@@ -36,6 +40,10 @@ var setup_socket = function() {
         $('whoIsHere').innerHTML = 
             " <a href='#' onclick='toggle_people_list()'>кто здесь? (<span id='people_count'>0</span>)</a>";            
         send_datagram({'type': 'set-name', 'new_name': chat_nick}); // M4
+        
+        //обновляем список пользоватлей и запускаем таймер,
+        //список так же обнавляется однократно при приходи сообщения типа 'notify'
+        intervalId = window.setInterval("updateUserList();",30000);
 
         $('inputbox').focus();
     };
@@ -46,6 +54,7 @@ var setup_socket = function() {
     
     ws.onclose = function() { 
         logg('Невозможно подключиться к серверу.'); 
+        clearInterval(intervalId);
     };
     //logg('After setting onclose, ws.readyState=' + ws.readyState)
     
@@ -73,6 +82,14 @@ var datagram_recieved = function (packet) {
                 if (datagram.commands.indexOf('clearall') >= 0) {
                     logg("<b>" + datagram.sender + "</b> очистил общую доску для рисования");
                 }
+            }
+            break;
+        case 'roommates':
+            $('people_count').innerHTML = datagram.list.length
+            $('list_of_people').innerHTML = "";
+            // заполнить список людей
+            for(i in datagram.list){
+                $('list_of_people').innerHTML += datagram.list[i] + "<br/>";   
             }
             break;
     }
@@ -118,4 +135,6 @@ var notification_recieved = function (datagram) {
             }
             break;
     }
+    //обновление списка пользователей
+    updateUserList();
 };
