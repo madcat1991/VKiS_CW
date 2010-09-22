@@ -31,7 +31,10 @@ var setup_socket = function() {
         
         window.chat_nick = localStorage.getItem('chat_nick');
         // далее в сессии используем chat_nick, а не localStorage
-        $('userNickInfo').innerHTML = "Вас зовут <b>" + chat_nick + "</b> (<a href='#' onclick='renameNickname()'>сменить ник</a>)";            
+        $('userNickInfo').innerHTML = "Вас зовут <b>" + chat_nick + 
+            "</b> (<a href='#' onclick='renameNickname()'>сменить ник</a>)";
+        $('whoIsHere').innerHTML = 
+            " <a href='#' onclick='toggle_people_list()'>кто здесь? (<span id='people_count'>0</span>)</a>";            
         send_datagram({'type': 'set-name', 'new_name': chat_nick}); // M4
 
         $('inputbox').focus();
@@ -62,6 +65,10 @@ var datagram_recieved = function (packet) {
             break;
         case 'notify':
             notification_recieved(datagram);
+            break;
+        case 'public_drawing':
+            canvases.public_canvas.execute_command_sequence(datagram.commands);
+            logg('<b>' + datagram.sender + '</b> что-то нарисовал');
             break;
     }
 };

@@ -176,12 +176,13 @@ class WebSocketThread(threading.Thread):
         return str.decode('utf-8', 'ignore') # я не знаю что значит ignore=)
                 
     
-    def broadcast(self, datagram):
+    def broadcast(self, datagram, except_user=None):
         """ отправка датаграммы всем-всем-всем участникам чата"""
         data = json.dumps(datagram)
         for user in self.websocket.users:
             if user.nick is not None:
-                self.send_data(user.socket, data)
+                if user != except_user:
+                    self.send_data(user.socket, data)
             
     def send_private(self, datagram, user):
         """ отправка датаграммы отдельному пользователю(user) """
@@ -240,5 +241,9 @@ class WebSocketThread(threading.Thread):
                         'old_nick': old_nick 
                     }
                 )
+        elif datagram['type'] == 'public_drawing': #M7
+            datagram['sender'] = this_user.nick
+            # TODO : сохранять историю рисования?
+            self.broadcast(datagram, except_user=this_user)
                 
         return True

@@ -2,29 +2,39 @@
     <link rel="stylesheet" href="chat.css" type="text/css"/>
 </head>
 <body bgcolor="#FF5500">
-<h1>Девайс сетевой двухканальный прямого действия, оранжевый (0.49а)</h1>
+<div>
+    <h1>Девайс <a href='#' onclick='reconnect_prompt()'>сетевой</a> двухканальный прямого действия, оранжевый (0.54а)</h1>
 
-<div style='float: left'>
-    <div id='userNickInfo'></div>
-    <div id='chatLog'></div>
-    <!--<input id='inputbox' type='text' onkeypress='edit_keypress(event)'/>-->
-    <div id='inputbox' contenteditable onkeypress='edit_keypress(event)'></div>
+    <table>
+    <tr>
+        <td>
+            <div style='float: left'>
+                <div><span id='userNickInfo'></span> <span id='whoIsHere'></span></div>
+                <div id='chatLog'></div>
+                <!--<input id='inputbox' type='text' onkeypress='edit_keypress(event)'/>-->
+                <div id='inputbox' contenteditable onkeypress='edit_keypress(event)'></div>
+            </div>
+        </td>
+        <td>
+            <div id='drawingPanel'>
+                <div id='drawingPanel_tabs'>
+                    <span class='tab_switcher_span active_tab' id='dp_tab_switch_public'>Общая доска для рисования</span>
+                    <span class='tab_switcher_span inactive_tab' id='dp_tab_switch_private'>Составление графического сообщения</span>
+                </div>
+                <div id='drawing_public'>
+                    <canvas class='drawing_canvas' width='500' height='320' id='public_canvas'></canvas>
+                    <div class='draw_toolbar' id='public_draw_tools'>Тут будут инструменты рисования</div>
+                </div>
+                <div id='drawing_private'>
+                    <canvas class='drawing_canvas' id='private_canvas'></canvas>
+                    <div class='draw_toolbar' id='private_draw_tools'>Тут будут инструменты рисования и кнопка ОТПРАВИТЬ</div>
+                </div>
+            </div>
+        </td>
+    </tr>
+    </table>
 </div>
-
-<div id='drawingPanel'>
-    <div id='drawingPanel_tabs'>
-        <span class='tab_switcher_span active_tab' id='dp_tab_switch_public'>Общая доска для рисования</span>
-        <span class='tab_switcher_span inactive_tab' id='dp_tab_switch_private'>Составление графического сообщения</span>
-    </div>
-    <div id='drawing_public'>
-        <canvas class='drawing_canvas' width='500' height='320' id='public_canvas'></canvas>
-        <div class='draw_toolbar' id='public_draw_tools'>Тут будут инструменты рисования</div>
-    </div>
-    <div id='drawing_private'>
-        <canvas class='drawing_canvas' id='private_canvas'></canvas>
-        <div class='draw_toolbar' id='private_draw_tools'>Тут будут инструменты рисования и кнопка ОТПРАВИТЬ</div>
-    </div>
-</div>
+<div id='list_of_people'></div>
 
 
 <script src="utils.js"></script>
@@ -34,6 +44,6 @@
 
 <script type="text/javascript">
     var server_ip = "127.0.0.1";
-    setup_socket();
+    setup_socket(server_ip);
 </script>
 </body>

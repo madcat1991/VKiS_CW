@@ -78,3 +78,27 @@ function renameNickname(){
     
     send_datagram({'type': 'set-name', 'new_name': chat_nick}); // Сервер поймет это как M4б, т.к. юзер уже имеет имя
 }
+
+var toggle_people_list = function() { 
+    if ($('list_of_people').style.display == 'none') {
+        $('list_of_people').style.display = 'block';
+        $('list_of_people').style.left = 227;
+        $('list_of_people').style.top = 99; // неструктуррно. Пофиг.
+        $('list_of_people').innerHTML = "";
+        // заполнить список людей списком людей
+        $('list_of_people').innerHTML = "тут будет список людей";
+    } else {
+        $('list_of_people').style.display = 'none';
+    }
+};
+
+$('list_of_people').style.display = 'none';
+
+var reconnect_prompt = function() {
+    var new_ip = prompt("Server ip:", server_ip);
+    if (new_ip == null)
+        return;
+    server_ip = new_ip;
+    window.ws.close();
+    setup_socket(server_ip);
+};

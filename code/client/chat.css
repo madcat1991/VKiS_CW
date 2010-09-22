@@ -16,8 +16,25 @@
     min-height: 20px;
     max-height: 128px; /* 6 lines */
     overflow: auto;
-    
     background-color: white;
+}
+
+#list_of_people
+{
+    width: 240px;
+    height: 400px;
+    z-index: 999;
+    position: absolute;
+    display: none;
+    overflow: auto;
+    border: solid 1px yellow;
+    background-color: #FAD193;
+}
+
+A[href="#"] 
+{
+    border-bottom: dashed 1px blue;
+    text-decoration: none;
 }
 
 .chatString
