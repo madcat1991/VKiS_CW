@@ -1,5 +1,5 @@
 ﻿//id интервала
-var intervalId=""
+var intervalId="";
 
 // настройка сокета
 var setup_socket = function() {
@@ -85,7 +85,7 @@ var datagram_recieved = function (packet) {
             }
             break;
         case 'roommates':
-            $('people_count').innerHTML = datagram.list.length
+            $('people_count').innerHTML = datagram.list.length;
             $('list_of_people').innerHTML = "";
             // заполнить список людей
             for(i in datagram.list){

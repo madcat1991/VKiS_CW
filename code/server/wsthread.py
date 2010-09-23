@@ -203,7 +203,8 @@ class WebSocketThread(threading.Thread):
                 this_user.nick = datagram['new_name']
                 self.broadcast({'type': 'notify', 'subtype': 'user_joined', 'user': datagram['new_name']})
                 #отправка последних N сообщений новому пользователю
-                self.send_private({'type': 'notify', 'subtype': 'last_messages', 'messages': self.websocket.last_n_messages}, this_user)
+                if self.websocket.last_n_messages != []:
+                    self.send_private({'type': 'notify', 'subtype': 'last_messages', 'messages': self.websocket.last_n_messages}, this_user)
                 # отправка истории рисования на публичной доске
                 self.send_private({'type': 'public_drawing', 'commands': self.websocket.public_picture_history}, this_user)
             else:
