@@ -67,9 +67,9 @@ $('dp_tab_switch_public').onclick = toggle_drawing_tabs;
 
 //переименование пользователя
 function renameNickname(){        
-    var nick = prompt('Введите ваш псевдоним:', chat_nick);
-    if (nick == null || nick == '') {
-        return; // null - кнопка Cancel, а пустой ник нам не нужен
+    var nick = prompt('Введите ваш псевдоним:', chat_nick).trim();
+    if (nick == null || nick == '' || localStorage.getItem('chat_nick') == nick) {
+        return; // null - кнопка Cancel, а пустой или повторяющийся ник нам не нужен
     }
     localStorage.setItem('chat_nick', nick);
         
