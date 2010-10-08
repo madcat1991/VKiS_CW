@@ -1,7 +1,7 @@
 ﻿import threading
 import hashlib
 import socket
-import time
+import datetime
 import re
 import json
 
@@ -189,6 +189,9 @@ class WebSocketThread(threading.Thread):
         
         try:
             datagram = json.loads(data)
+            if datagram['type'] != 'roommates': 
+                self.websocket.save_chat_log(str(datetime.datetime.now()) + '\t' + \
+                    str(self.details) + '\t' + str(this_user.nick) + '\t' + str(datagram) + '\n')
         except Exception as e:
             import pdb; pdb.set_trace();
         

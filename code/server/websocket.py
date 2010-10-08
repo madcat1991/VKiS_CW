@@ -18,7 +18,11 @@ class WebSocket():
         if len(self.last_n_messages) > LAST_N_MESSAGES_MAX_COUNT:
             self.last_n_messages = self.last_n_messages[1:]
 
-    
+    def save_chat_log(self, log_message):
+        """ Логирование происходящих серверных изменений(кроме roommates)  """
+        self.chat_log_file.write(log_message)
+        self.chat_log_file.flush()
+
     def __init__(self, address, port, connections, server):
         #последние N сообщение
         self.last_n_messages = []
@@ -26,6 +30,7 @@ class WebSocket():
         
         #пользователи
         self.users=[]
+        self.chat_log_file = open('chat_log.log', 'a')
         
         self.server = server
         server = socket.socket ( socket.AF_INET, socket.SOCK_STREAM )
