@@ -35,14 +35,22 @@ class WebSocketThread(threading.Thread):
         #self.broadcast({'type': 'notify', 'subtype': 'user_joined', 'user': str(self.this_user.nick)})
         # сейчас делается при обработке первого сообщения М4 от этого пользователя
         
+        self.websocket.save_chat_log( u"%s\t%s\t%s\t%s\n" 
+            % ( datetime.datetime.now(), self.details, self.this_user.nick, "connected" ))
+
+        
         while True:
             connection_lives = self.interact(self.channel)
             if not connection_lives:
                 break
                 
+        self.websocket.save_chat_log( u"%s\t%s\t%s\t%s\n" 
+            % ( datetime.datetime.now(), self.details, self.this_user.nick, "disconnected" ))
+
         # удаляем из списка юзеров
         # надо бы lock(self.websocket.users), но я не умею)))
         self.websocket.users.remove(self.this_user)
+        
 
     def finduser(self, client):
         for user in self.websocket.users:
