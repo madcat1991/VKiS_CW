@@ -2,13 +2,14 @@
 var intervalId="";
 
 // настройка сокета
-var setup_socket = function() {
+var setup_socket = function(nick, password) {
     if (!window.WebSocket) {
-        document.write("<h1>No websockets for you, sorry</h1>");
+        //document.write("<h1>No websockets for you, sorry</h1>");
+        set_login_status('Браузер не поддерживает WebSocket', 'red');
         return;
     }
     
-    window.ws = new WebSocket("ws://" + server_ip + ":17600");
+    window.ws = new WebSocket("ws://" + server_ip);
     //logg('Right after creation, ws.readyState=' + ws.readyState)
     
     ws.onopen = function() {
@@ -18,11 +19,13 @@ var setup_socket = function() {
             datagram_recieved(evt.data);
         };
         
-         ws.onclose = function() { 
-            logg('Сервер разорвал соединение.'); 
+        ws.onclose = function() { 
+            logg('Соединение с сервером разорвано'); 
             clearInterval(intervalId);
+            set_login_status('Соединение с сервером разорвано', 'red');
         };
         
+        /*
         // сообщаем серверу наш ник, чтобы стать участником чата
         // см. описание протокола, М4, пункт 4а 
         if (localStorage.getItem('chat_nick') == null) 
@@ -35,17 +38,16 @@ var setup_socket = function() {
         
         window.chat_nick = localStorage.getItem('chat_nick');
         // далее в сессии используем chat_nick, а не localStorage
-        $('userNickInfo').innerHTML = "Вас зовут <b>" + chat_nick + 
-            "</b> (<a href='#' onclick='renameNickname()'>сменить ник</a>)";
-        $('whoIsHere').innerHTML = 
-            " <a href='#' onclick='toggle_people_list()'>кто здесь? (<span id='people_count'>0</span>)</a>";            
-        send_datagram({'type': 'set-name', 'new_name': chat_nick}); // M4
+        */
         
-        //обновляем список пользоватлей и запускаем таймер,
-        //список так же обнавляется однократно при приходи сообщения типа 'notify'
-        intervalId = window.setInterval("updateUserList();",30000);
-
-        $('inputbox').focus();
+        window.chat_nick = nick;
+        
+                   
+        send_datagram({'type': 'login', 'nick': chat_nick, 'password': password}); // M4
+        
+        // теперь ждем подтверждения успешного логина
+        
+        // действия по запуску таймера теперь в datagram_recieved, #M11
     };
     //logg('After setting onopen, ws.readyState=' + ws.readyState)
     
@@ -55,6 +57,7 @@ var setup_socket = function() {
     ws.onclose = function() { 
         logg('Невозможно подключиться к серверу.'); 
         clearInterval(intervalId);
+        set_login_status('Невозможно подключиться к серверу', 'red');
     };
     //logg('After setting onclose, ws.readyState=' + ws.readyState)
     
@@ -63,11 +66,27 @@ var setup_socket = function() {
 // общение с сервером - уровень пакетов/датаграмм
 
 var datagram_recieved = function (packet) {
-    /// я ОЧЕНЬ надеюсь, что packet содержит датаграмму целиком, 
-    /// а не первые N байт. Потому что как выдернуть остальные??
     datagram = JSON.parse(packet);
     
     switch (datagram.type) {
+        case 'login_result': //#M11
+            if (datagram.logged_in) {
+                hide_login_window();
+                window.drawing_color = datagram.color;
+                $('inputbox').focus();
+                
+                $('userNickInfo').innerHTML = "Вас зовут <b>" + window.chat_nick + "</b>" +
+                    //" (<a href='#' onclick='renameNickname()'>сменить ник</a>)";
+                    "";
+                $('whoIsHere').innerHTML = 
+                    " <a href='#' onclick='toggle_people_list()'>кто здесь? (<span id='people_count'>0</span>)</a>"; 
+                //обновляем список пользоватлей и запускаем таймер,
+                //список так же обновляется однократно при приходе сообщения типа 'notify'
+                intervalId = window.setInterval("updateUserList();",30000);
+            } else {
+                set_login_status(datagram.message, 'red');
+            }
+            break;
         case 'text':
             //время на клиенте
             text_message_recieved(datagram.value, datagram.sender, getLocalTime());
@@ -89,7 +108,8 @@ var datagram_recieved = function (packet) {
             $('list_of_people').innerHTML = "";
             // заполнить список людей
             for(i in datagram.list){
-                $('list_of_people').innerHTML += datagram.list[i] + "<br/>";   
+                $('list_of_people').innerHTML += datagram.list[i] + "<br/>";
+                // TODO : отображать цвет!!!
             }
             break;
     }

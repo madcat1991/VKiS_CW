@@ -207,17 +207,41 @@ class WebSocketThread(threading.Thread):
             datagram['sender'] = this_user.nick
             self.websocket.save_last_message(datagram)
             self.broadcast(datagram)
-        elif datagram['type'] == 'set-name':    #M4 
-            if this_user.nick is None:
+        elif datagram['type'] == 'login':       #M10
+            password_correct = (datagram['password'] == '2')
+            new_user_registered = (datagram['nick'] == 'Gruk') # для тестирования, считаем, что Gruk не зарегистрирован
+            user_already_on_server = (datagram['nick'] == 'Wasd') # для тестирования, считаем, что Wasd всегда на сервере
+            
+            successfull_login = password_correct and not user_already_on_server
+            
+            if successfull_login:
                 # приветствуем нового участника!
-                this_user.nick = datagram['new_name']
-                self.broadcast({'type': 'notify', 'subtype': 'user_joined', 'user': datagram['new_name']})
+                # TODO: отправить реальный цвет
+                self.send_private( {'type': 'login_result', 'logged_in': True, 'color': '#FF0000'}, this_user) # M11
+                
+                this_user.nick = datagram['nick']
+                self.broadcast({'type': 'notify', 'subtype': 'user_joined', 'user': datagram['nick']})
                 #отправка последних N сообщений новому пользователю
                 if self.websocket.last_n_messages != []:
                     self.send_private({'type': 'notify', 'subtype': 'last_messages', 'messages': self.websocket.last_n_messages}, this_user)
                 # отправка истории рисования на публичной доске
                 self.send_private({'type': 'public_drawing', 'commands': self.websocket.public_picture_history}, this_user)
+                if new_user_registered:
+                    self.send_private({'type': 'text', 'sender': 'Сообщение от сервера',
+                        'value': 'Вы были зарегистрированы как новый пользователь чата. Запомните введенный вами пароль.'},
+                        this_user)
+            elif not password_correct:
+                self.send_private( {'type': 'login_result', 'logged_in': False, 'message': 'Неверный пароль'}, this_user) # M11
+                return False # разрываем связь
+            elif user_already_on_server:
+                self.send_private( {'type': 'login_result', 'logged_in': False, 'message': 'Юзер уже есть на сервере'}, this_user) # M11
+                return False # разрываем связь
             else:
+                self.send_private( {'type': 'login_result', 'logged_in': False, 'message': 'Что-то еще пошло не так'}, this_user) # M11
+                return False # разрываем связь
+                
+        elif datagram['type'] == 'set-name':    #M4 
+            if this_user.nick is not None:
                 old_nick = this_user.nick
                 this_user.nick = datagram['new_name']
                 self.broadcast(

@@ -1,4 +1,8 @@
-﻿var canvases = {
+﻿// данный юзер должен рисовать цветом,
+// указанным в window.drawing_color
+// (заполняется при успешном логине)
+
+var canvases = {
     public_canvas: {
         element: $('public_canvas'),
         toolbar: $('public_draw_tools'),
