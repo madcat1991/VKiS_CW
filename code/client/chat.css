@@ -43,18 +43,19 @@ A[href="#"]
 }
 .usernick
 {
+    font-weight: bold;
     vertical-align: top;
 }
 .messageBody
 {
     margin-left: 20px;
 }
-.chatRow_even
+.chatRow_foreign
 {
     background-color: #FF8833;
 }
 
-.chatRow_odd
+.chatRow_own
 {
     background-color: #FF9944;
 }

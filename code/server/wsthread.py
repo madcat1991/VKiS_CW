@@ -197,7 +197,6 @@ class WebSocketThread(threading.Thread):
             self.websocket.save_last_message(datagram)
             self.broadcast(datagram)
         elif datagram['type'] == 'set-name':    #M4 
-            # TODO : проверить, занят ли ник?
             if this_user.nick is None:
                 # приветствуем нового участника!
                 this_user.nick = datagram['new_name']
@@ -233,3 +232,10 @@ class WebSocketThread(threading.Thread):
             datagram['list'] = self.get_users_list()
             self.send_private(datagram, this_user)
         return True
+      
+    def check_user_nick_exist(self, user_nick):
+        """ проверка отсутствия такого ника у пользователя """
+        for chat_user in self.websocket.users:
+            if chat_user.nick == user_nick:
+                return 0
+        return 1

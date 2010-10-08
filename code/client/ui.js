@@ -1,23 +1,22 @@
 ﻿var rowcount = 0; // число строк таблицы в чате
     
 // добавление строки в лог чата
-// Использование: logg(служебное_сообщение) или logg(автор, сообщение)
-var logg = function(cell1, cell2) { 
-    // раскраска строк в зебру
-    rowcount += 1;
+// Использование: logg(служебное_сообщение) или logg(сообщение, автор, время)
+var logg = function(cellMessage, cellName, cellTime) { 
+    // раскраска строк
     var rowclass = '';
-    if (rowcount % 2 == 0)
-        rowclass = 'chatRow_even';
+    if (cellName == localStorage.getItem('chat_nick'))
+        rowclass = 'chatRow_own';
     else
-        rowclass = 'chatRow_odd';
+        rowclass = 'chatRow_foreign';
     
     var text = "";
-    if (!cell2) {
-        text = "<div class='chatString " + rowclass + "'>" + cell1 + "</div>";
+    if (!cellName) {
+        text = "<div class='chatString " + rowclass + "'>" + cellMessage + "</div>";
     } else {
         text = "<div class='chatString " + rowclass + "'>\n" + 
-               "  <div class='usernick'>" + cell1 + "</div>\n" + 
-               "  <div class='messageBody'>" + cell2 + "</div\n>" + 
+               "  <div class='usernick'>" + cellName + ' (' + cellTime + ') ' + "</div>\n" + 
+               "  <div class='messageBody'>" + cellMessage + "</div\n>" + 
                "</div>\n";
     }
     $('chatLog').innerHTML = $('chatLog').innerHTML + text;

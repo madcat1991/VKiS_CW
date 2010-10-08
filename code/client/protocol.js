@@ -70,7 +70,7 @@ var datagram_recieved = function (packet) {
     switch (datagram.type) {
         case 'text':
             //время на клиенте
-            text_message_recieved(datagram.sender, datagram.value, getLocalTime());
+            text_message_recieved(datagram.value, datagram.sender, getLocalTime());
             break;
         case 'notify':
             notification_recieved(datagram);
@@ -110,8 +110,8 @@ var send_text_message = function (msg_text) {
 };
 
 // получение текстового сообщения
-var text_message_recieved = function (sender, msg_text, time) { 
-    logg("<b>" + sender + " (" + time + ") " + ":</b>", msg_text);
+var text_message_recieved = function (msg_text, sender, time) { 
+    logg(msg_text, sender, time);
 };
 
     
@@ -131,7 +131,7 @@ var notification_recieved = function (datagram) {
         case 'last_messages':
             logg("<i>Последние сообщения в чате:</i>");
             for(i in datagram.messages){
-                text_message_recieved(datagram.messages[i].sender, datagram.messages[i].value, datagram.messages[i].time); 
+                text_message_recieved(datagram.messages[i].value, datagram.messages[i].sender, datagram.messages[i].time); 
             }
             break;
     }
