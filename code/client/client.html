@@ -46,6 +46,22 @@
         </td>
     </tr>
     </table>
+    
+    <div id='modal_window_container'>
+        <div id='modal_window'>
+        <h2>Вход в конференцию</h2>
+        <hr/>
+        <form id='login_form'>
+        <table width='100%'>
+            <tr><td>Сервер:</td><td><input type='text' id='login_ip'/></td></tr>
+            <tr><td>Имя:</td><td><input type='text' id='login_nick'/></td></tr>
+            <tr><td>Пароль:</td><td><input type='password' id='login_pass'/></td></tr>
+            <tr><td colspan='2' id='login_statusbar'>&nbsp;</td></tr>
+            <tr><td colspan='2' align='center'><input type='submit' id='login_button' value='Войти'/></td></tr>
+        </table>
+        </form>
+        </div>
+    </div>
 </div>
 <div id='list_of_people'></div>
 
@@ -56,7 +72,8 @@
 <script src="drawing.js"></script>
 
 <script type="text/javascript">
-    var server_ip = "127.0.0.1";
-    setup_socket(server_ip);
+    var server_ip = "127.0.0.1" + ":17600";
+    $('login_ip').value = server_ip;
+    $('login_nick').focus();
 </script>
 </body>

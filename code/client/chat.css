@@ -22,13 +22,14 @@
 #list_of_people
 {
     width: 240px;
-    height: 400px;
-    z-index: 999;
+    max-height: 400px;
+    z-index: 599;
     position: absolute;
     display: none;
     overflow: auto;
     border: solid 1px yellow;
     background-color: #FAD193;
+    padding-bottom: 40px;
 }
 
 A[href="#"] 
@@ -151,4 +152,54 @@ A[href="#"]
     border: solid 1px green;
     cursor: hand;
     margin: 1px;
+}
+
+#modal_window_container
+{
+    z-index: 999;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.66);
+}
+
+#modal_window
+{
+    border-radius: 12px;
+    background-color: white;
+    width: 300px;
+    /* this will center it on page */
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 150px;
+    
+    -webkit-box-shadow: 3px 3px 5px black;
+}
+
+#modal_window h2
+{
+    text-align: center;
+    margin-top: 10px;
+    padding-top: 8px;
+    margin-bottom: 5px;
+    font-family: sans-serif;
+    font-size: 110%;
+}
+
+#modal_window #login_button
+{
+    width: 100px;
+    margin-bottom: 10px;
+}
+
+#modal_window table
+{
+    padding: 10px;
+}
+
+#modal_window input[type='text'], #modal_window input[type='password']
+{
+    width: 100%;
 }

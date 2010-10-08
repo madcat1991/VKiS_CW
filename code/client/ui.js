@@ -5,7 +5,7 @@
 var logg = function(cellMessage, cellName, cellTime) { 
     // раскраска строк
     var rowclass = '';
-    if (cellName == localStorage.getItem('chat_nick'))
+    if (cellName == window.chat_nick)
         rowclass = 'chatRow_own';
     else
         rowclass = 'chatRow_foreign';
@@ -27,7 +27,6 @@ var logg = function(cellMessage, cellName, cellTime) {
     
 
     
-// UI  
 var edit_keypress = function (event) {
     if (event.keyCode == 13 && !event.shiftKey) {
         if ($('inputbox').innerHTML != "") {
@@ -96,10 +95,43 @@ var toggle_people_list = function() {
 $('list_of_people').style.display = 'none';
 
 var reconnect_prompt = function() {
-    var new_ip = prompt("Server ip:", server_ip);
-    if (new_ip == null)
-        return;
-    server_ip = new_ip;
     window.ws.close();
-    setup_socket(server_ip);
+    set_login_status("");
+    $('login_ip').focus();
+};
+
+
+// ============= новый интерфейс для подключения к серверу ============
+
+var set_login_status = function(text, color) {
+    if (!color)
+        color = 'black';
+    if ($('modal_window_container').style.display != 'block') 
+        $('modal_window_container').style.display = 'block';
+    
+    $('login_statusbar').innerHTML = text;
+    $('login_statusbar').style.color = color;
+    
+};
+
+var hide_login_window = function() {
+    $('modal_window_container').style.display = 'none';
+};
+
+
+$('login_form').onsubmit = function () {
+    var uri = $('login_ip').value.trim();
+    var nick = $('login_nick').value.trim();
+    var pass = $('login_pass').value.trim();
+    
+    if (uri == '') { set_login_status('Введите адрес сервера', 'red'); return; }
+    if (nick == '') { set_login_status('Введите имя участника', 'red'); return; }
+    if (pass == '') { set_login_status('Введите пароль', 'red'); return; }
+    
+    set_login_status('Подключение...', 'blue');
+    
+    server_ip = uri;
+    setup_socket(nick, pass);
+    
+    return false; // предотвратить отправку формы
 };
