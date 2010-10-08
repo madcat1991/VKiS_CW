@@ -47,16 +47,20 @@ var prepare_canvas = function (canvas, name) {
         canvas.draw_history.push(hist_item);
     };
     
+    canvas.flush_history = function () {
+        // send history to server
+        var datagram = {'type': 'public_drawing', 'commands': canvas.draw_history};
+        send_datagram(datagram);
+        // clear history
+        canvas.draw_history = []
+    };
+    
     canvas.img_update = function() {
         canvas.context.drawImage(canvas.temp_element, 0, 0);
         canvas.temp_context.clearRect(0, 0, canvas.temp_element.width, canvas.temp_element.height);
         
         if (canvas.realtime) {
-            // send history to server
-            var datagram = {'type': 'public_drawing', 'commands': canvas.draw_history};
-            send_datagram(datagram);
-            // clear history
-            canvas.draw_history = []
+            canvas.flush_history();
         };
     };
     
@@ -87,6 +91,7 @@ var prepare_canvas = function (canvas, name) {
                 context.lineTo(ev._x, ev._y);
                 context.stroke();
                 tool.prev_pos = new_pos;
+                canvas.flush_history();
             }
         };
         
