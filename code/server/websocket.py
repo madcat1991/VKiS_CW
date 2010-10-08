@@ -20,7 +20,7 @@ class WebSocket():
 
     def save_chat_log(self, log_message):
         """ Логирование происходящих серверных изменений(кроме roommates)  """
-        self.chat_log_file.write(log_message)
+        self.chat_log_file.write(log_message.encode('utf-8'))
         self.chat_log_file.flush()
 
     def __init__(self, address, port, connections, server):
@@ -30,7 +30,7 @@ class WebSocket():
         
         #пользователи
         self.users=[]
-        self.chat_log_file = open('chat_log.log', 'a')
+        self.chat_log_file = open('chat_log.log', 'ab')
         
         self.server = server
         server = socket.socket ( socket.AF_INET, socket.SOCK_STREAM )

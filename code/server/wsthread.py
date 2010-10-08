@@ -190,8 +190,8 @@ class WebSocketThread(threading.Thread):
         try:
             datagram = json.loads(data)
             if datagram['type'] != 'roommates': 
-                self.websocket.save_chat_log( "%s\t%s\t%s\t%s\n" % ( str(datetime.datetime.now()), 
-                    str(self.details), str(this_user.nick),str(datagram) ) )
+                log_entry = u"%s\t%s\t%s\t%s\n" % ( datetime.datetime.now(), self.details, this_user.nick, datagram )
+                self.websocket.save_chat_log( log_entry )
         except Exception as e:
             import pdb; pdb.set_trace();
         
