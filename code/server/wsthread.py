@@ -193,7 +193,7 @@ class WebSocketThread(threading.Thread):
             print "//malformed packet from #" + unicode(this_user.nick)
             return True
             
-        print data
+        #print data
         
         try:
             datagram = json.loads(data)
@@ -207,17 +207,29 @@ class WebSocketThread(threading.Thread):
             datagram['sender'] = this_user.nick
             self.websocket.save_last_message(datagram)
             self.broadcast(datagram)
-        elif datagram['type'] == 'login':       #M10
-            password_correct = (datagram['password'] == '2')
-            new_user_registered = (datagram['nick'] == 'Gruk') # для тестирования, считаем, что Gruk не зарегистрирован
-            user_already_on_server = (datagram['nick'] == 'Wasd') # для тестирования, считаем, что Wasd всегда на сервере
             
+        elif datagram['type'] == 'login':       #M10
+            str_nick = datagram['nick'].encode('utf-8') # shelve requires byte-strings as keys
+            
+            if str_nick in self.websocket.registered_users:
+                new_user_registered = False
+                user_already_on_server = self.websocket.is_user_on_server(datagram['nick'])
+                password_correct = (self.websocket.registered_users[str_nick]['password'] == datagram['password'])
+            else:
+                self.websocket.register_new_user(datagram['nick'], datagram['password'])
+                new_user_registered = True
+                password_correct = True
+                user_already_on_server = False
+                
             successfull_login = password_correct and not user_already_on_server
             
             if successfull_login:
                 # приветствуем нового участника!
                 # TODO: отправить реальный цвет
                 self.send_private( {'type': 'login_result', 'logged_in': True, 'color': '#FF0000'}, this_user) # M11
+                
+                this_user.is_super = self.websocket.registered_users[str_nick]['is_super']
+                this_user.color = self.websocket.registered_users[str_nick]['color']
                 
                 this_user.nick = datagram['nick']
                 self.broadcast({'type': 'notify', 'subtype': 'user_joined', 'user': datagram['nick']})
