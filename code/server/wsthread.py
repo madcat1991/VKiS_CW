@@ -48,7 +48,7 @@ class WebSocketThread(threading.Thread):
             % ( datetime.datetime.now(), self.details, self.this_user.nick, "disconnected" ))
 
         # удаляем из списка юзеров
-        # надо бы lock(self.websocket.users), но я не умею)))
+        #LOCK
         self.websocket.users.remove(self.this_user)
         
 
@@ -62,12 +62,15 @@ class WebSocketThread(threading.Thread):
         result = []
         for user in self.websocket.users:
             result.append(user.nick)
+            # TODO : сюда же и user.color
         return result
 
     def send_data(self, client, str):
         str = b"\x00" + str.encode('utf-8') + b"\xff"
         try:
-            return client.send(str)
+            #LOCK
+            rst = client.send(str)
+            return rst
         except IOError as e:
             if e.errno == 10053:
                 print "Stupid error 10053"
@@ -268,6 +271,7 @@ class WebSocketThread(threading.Thread):
             datagram['sender'] = this_user.nick
             self.broadcast(datagram, except_user=this_user)
             
+            #LOCK
             self.websocket.public_picture_history.extend(datagram['commands'])
             if 'clearall' in datagram['commands']:
                 self.websocket.public_picture_history = []

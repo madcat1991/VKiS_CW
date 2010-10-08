@@ -16,12 +16,14 @@ class WebSocket():
 
     def save_last_message(self, datagram):
         """ сохранение последнего полученного сообщения в N последних """
+        #LOCK
         self.last_n_messages.append({'sender': datagram['sender'], 'value': datagram['value'], 'time': datetime.datetime.now().strftime('%H:%M:%S')})
         if len(self.last_n_messages) > LAST_N_MESSAGES_MAX_COUNT:
             self.last_n_messages = self.last_n_messages[1:]
 
     def save_chat_log(self, log_message):
         """ Логирование происходящих серверных изменений(кроме roommates)  """
+        #LOCK
         self.chat_log_file.write(log_message.encode('utf-8'))
         self.chat_log_file.flush()
         
@@ -32,16 +34,20 @@ class WebSocket():
         color = '#FF0000'
         record = {'nick': nick, 'password': password, 'color': color, 'is_super': is_super}
         
+        #LOCK
         str_nick = nick.encode('utf-8') # shelve requires byte-strings as keys
         self.registered_users[str_nick] = record
         self.registered_users.sync() # flush
     
     def is_user_on_server(self, nick):
         """ Проверка, подключен ли nick к серверу """
+        #LOCK
+        result = False
         for user in self.users:
             if user.nick == nick:
-                return True
-        return False
+                result = True
+                break
+        return result
 
     def __init__(self, address, port, connections, server):
         #последние N сообщений
