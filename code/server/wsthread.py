@@ -5,6 +5,8 @@ import datetime
 import re
 import json
 
+from utils import Util
+
 
 # штука для преобразования чисел в строку байтов в big-endian
 from struct import Struct
@@ -61,8 +63,7 @@ class WebSocketThread(threading.Thread):
     def get_users_list(self):
         result = []
         for user in self.websocket.users:
-            result.append(user.nick)
-            # TODO : сюда же и user.color
+            result.append({'nick': user.nick, 'color': user.color})
         return result
 
     def send_data(self, client, str):
@@ -219,7 +220,7 @@ class WebSocketThread(threading.Thread):
                 user_already_on_server = self.websocket.is_user_on_server(datagram['nick'])
                 password_correct = (self.websocket.registered_users[str_nick]['password'] == datagram['password'])
             else:
-                self.websocket.register_new_user(datagram['nick'], datagram['password'])
+                self.websocket.register_new_user(datagram['nick'], datagram['password'],Util.get_random_rgb_color_string())
                 new_user_registered = True
                 password_correct = True
                 user_already_on_server = False
@@ -228,8 +229,7 @@ class WebSocketThread(threading.Thread):
             
             if successfull_login:
                 # приветствуем нового участника!
-                # TODO: отправить реальный цвет
-                self.send_private( {'type': 'login_result', 'logged_in': True, 'color': '#FF0000'}, this_user) # M11
+                self.send_private( {'type': 'login_result', 'logged_in': True, 'color': self.websocket.registered_users[str_nick]['color']}, this_user) # M11
                 
                 this_user.is_super = self.websocket.registered_users[str_nick]['is_super']
                 this_user.color = self.websocket.registered_users[str_nick]['color']
@@ -269,16 +269,18 @@ class WebSocketThread(threading.Thread):
                 )
         elif datagram['type'] == 'public_drawing': #M7
             datagram['sender'] = this_user.nick
-            self.broadcast(datagram, except_user=this_user)
             
             #LOCK
-            self.websocket.public_picture_history.extend(datagram['commands'])
-            if 'clearall' in datagram['commands']:
+            if ('clearall' in datagram['commands']) and this_user.is_super :
+                print this_user.is_super
+                print datagram
                 self.websocket.public_picture_history = []
-            else:
-                datagram['commands'] = []
-            # отправляем этому же юзеру, чтобы он понял, что сообщение дошло
-            self.send_private(datagram, this_user)
+                self.broadcast(datagram)
+            elif 'clearall' not in datagram['commands']:
+                print datagram
+                self.websocket.public_picture_history.extend(datagram['commands'])
+                self.broadcast(datagram, except_user=this_user)
+
         elif datagram['type'] == 'roommates': #M5
             datagram['list'] = self.get_users_list()
             self.send_private(datagram, this_user)

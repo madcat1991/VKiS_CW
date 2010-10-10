@@ -73,6 +73,7 @@ var datagram_recieved = function (packet) {
             if (datagram.logged_in) {
                 hide_login_window();
                 window.drawing_color = datagram.color;
+                canvases.public_canvas.set_color(window.drawing_color);
                 $('inputbox').focus();
                 
                 $('userNickInfo').innerHTML = "Вас зовут <b>" + window.chat_nick + "</b>" +
@@ -99,6 +100,7 @@ var datagram_recieved = function (packet) {
             if (datagram.sender) {
                 $('last_public_draw').innerHTML = "Last: <b>" + datagram.sender + "</b> (" + getLocalTime() + ")";
                 if (datagram.commands.indexOf('clearall') >= 0) {
+                    canvases.public_canvas.clear_canvas();
                     logg("<b>" + datagram.sender + "</b> очистил общую доску для рисования");
                 }
             }
@@ -108,7 +110,9 @@ var datagram_recieved = function (packet) {
             $('list_of_people').innerHTML = "";
             // заполнить список людей
             for(i in datagram.list){
-                $('list_of_people').innerHTML += datagram.list[i] + "<br/>";
+                $('list_of_people').innerHTML += "<div>" + datagram.list[i].nick + 
+                    "<div style='float: right; width: 15px; height: 15px; border: #000 solid 1px; background-color:" + 
+                    datagram.list[i].color + ";'/></div>";
                 // TODO : отображать цвет!!!
             }
             break;

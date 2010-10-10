@@ -27,11 +27,10 @@ class WebSocket():
         self.chat_log_file.write(log_message.encode('utf-8'))
         self.chat_log_file.flush()
         
-    def register_new_user(self, nick, password):
+    def register_new_user(self, nick, password, color):
         """ Регистрация нового пользователя """
         # TODO : выбрать цвет
         is_super = (nick == 'Admin')
-        color = '#FF0000'
         record = {'nick': nick, 'password': password, 'color': color, 'is_super': is_super}
         
         #LOCK

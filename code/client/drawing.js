@@ -144,6 +144,52 @@ var prepare_canvas = function (canvas, name) {
         return tool;
     }; // end line
     
+    canvas.tool_set.rectangle = function() { 
+        var tool = this;
+        this.name = 'rectangle';
+        var context = canvas.temp_context;
+        
+        this.started = false;
+        
+        this.prev_pos = {'x': -1, 'y': -1};
+        
+        this.mousedown = function (ev) {
+            tool.started = true;
+            tool.prev_pos = {'x': ev._x, 'y': ev._y};
+        };
+        
+        this.mousemove = function (ev) {
+            if (!tool.started){
+                return;
+            }
+        
+            var x = Math.min(ev._x, tool.prev_pos.x),
+                y = Math.min(ev._y, tool.prev_pos.y),
+                width = Math.abs(ev._x - tool.prev_pos.x),
+                height = Math.abs(ev._y - tool.prev_pos.y);
+        
+            context.clearRect(0, 0, canvas.temp_element.width, canvas.temp_element.height);
+             
+            if (!width || !height){
+                return;
+            }
+                            
+            context.strokeRect(x, y, width, height);
+        };
+        
+        this.mouseup = function (ev) {
+            if (tool.started) {
+                tool.mousemove(ev);
+                tool.started = false;
+                tool.last_pos = {'x': ev._x, 'y': ev._y};
+                canvas.append_to_history({'p1': tool.prev_pos, 'p2': tool.last_pos });
+                canvas.img_update();
+            }
+        };
+        
+        return tool;
+    }; // end rectangle
+    
     // панель инструментов
     for (var toolname in canvas.tool_set) {
         (function (tool_name) {
@@ -158,42 +204,24 @@ var prepare_canvas = function (canvas, name) {
         )(toolname);
     }
     
-    
-    // выбор цвета
-    var color_selectors_span = canvas.toolbar.getElementsByClassName('color_selectors')[0];
-    var available_colors = ['#000000', '#FF0000', '#00FF00', '#0000FF'];
-    for (var color_index in available_colors) {
-        (function (color) {
-            var color_btn = document.createElement('span');
-            color_btn.style.backgroundColor = color_btn.style.color = color;
-            color_btn.className = 'color_selector_button';
-            color_btn.innerHTML = 'W'
-            color_btn.onclick = function () {
-                canvas.user_color = color;
-                canvas.temp_context.fillStyle = canvas.user_color;
-                canvas.temp_context.strokeStyle = canvas.user_color;
-            };
-            
-            color_selectors_span.appendChild(color_btn);
-        }
-        )(available_colors[color_index]);
-    }
-    
     // кнопка "фтопку"
     var button_clearall = canvas.toolbar.getElementsByClassName('button_clearall')[0];
     if (button_clearall) {
         button_clearall.onclick = function () {
-            canvas.context.clearRect(0, 0, canvas.element.width, canvas.element.height);
             var datagram = {'type': 'public_drawing', 'commands': ['clearall',]};
             send_datagram(datagram);
         }
     }
     
+    canvas.set_color = function(new_color){
+        canvas.user_color = new_color;
+        canvas.temp_context.fillStyle = canvas.user_color;
+        canvas.temp_context.strokeStyle = canvas.user_color;
+    };
+   
     // выбранные в данный момент
     canvas.user_tool = new canvas.tool_set['pencil']();
-    canvas.user_color = "#000000";
-    canvas.temp_context.fillStyle = canvas.user_color;
-    canvas.temp_context.strokeStyle = canvas.user_color;
+    canvas.set_color("#000000");
     
     canvas.mouse_handler = function (event) {
         if (event.layerX || event.layerX == 0) { // Firefox
@@ -216,6 +244,7 @@ var prepare_canvas = function (canvas, name) {
     canvas.temp_element.addEventListener('mousedown', canvas.mouse_handler, false);
     canvas.temp_element.addEventListener('mousemove', canvas.mouse_handler, false);
     canvas.temp_element.addEventListener('mouseup',   canvas.mouse_handler, false);
+    canvas.temp_element.addEventListener('keyup',   canvas.mouse_handler, false);
     
     canvas.execute_command = function (hist_item) {
         // при интерпретации входящих команд рисуем сразу на основном canvas
@@ -235,7 +264,13 @@ var prepare_canvas = function (canvas, name) {
                 canvas.context.lineTo(hist_item.param.p2.x, hist_item.param.p2.y);
                 canvas.context.stroke();
                 break;
-            case 'rect':
+            case 'rectangle':
+                x = Math.min(hist_item.param.p1.x, hist_item.param.p2.x);
+                y = Math.min(hist_item.param.p1.y, hist_item.param.p2.y);
+                width = Math.abs(hist_item.param.p1.x - hist_item.param.p2.x);
+                height = Math.abs(hist_item.param.p1.y - hist_item.param.p2.y);
+                            
+                canvas.context.strokeRect(x, y, width, height);
                 break;
             // etc
         };
@@ -245,6 +280,11 @@ var prepare_canvas = function (canvas, name) {
         for (i in sequence) {
             canvas.execute_command(sequence[i]);
         }
+    };
+    
+    //очистка канваса
+    canvas.clear_canvas = function(){
+        canvas.context.clearRect(0, 0, canvas.element.width, canvas.element.height);
     };
     
     return canvas;
