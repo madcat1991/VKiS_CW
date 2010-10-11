@@ -209,17 +209,17 @@ var prepare_canvas = function (canvas, name) {
             tool.prev_pos = {'x': ev._x, 'y': ev._y};
         };
         
-        this.keydown = function (ev) {
+        canvas.temp_element.keydown = function (ev) {
             if (!tool.started){
                 return;
             }
         
-            if (ev.keynum = 8){
+            if (ev.keynum == 8){
                 if (tool.text.length > 0){
                     tool.text = tool.text.substring(0,tool.text.length-1);
                 }
             }                
-            else if (ev.keynum = 13){
+            else if (ev.keynum == 13){
                 tool.save_and_clear();
             }
             else{
@@ -239,6 +239,10 @@ var prepare_canvas = function (canvas, name) {
             context.font = 'italic 30px sans serif';            
             context.fillText(tool.text, tool.prev_pos.x, tool.prev_pos.y);
         };
+        
+        this.mousemove = function (ev) {};
+        
+        this.mouseup = function (ev) {};
         
         this.save_and_clear = function () {
             if (tool.started) {
@@ -352,8 +356,8 @@ var prepare_canvas = function (canvas, name) {
                 canvas.context.strokeRect(x, y, width, height);
                 break;
             case 'text_tool':
-                context.font = 'italic 30px sans serif';            
-                context.fillText(hist_item.param.text, hist_item.param.p1.x, hist_item.param.p1.y);
+                canvas.context.font = 'italic 30px sans serif';            
+                canvas.context.fillText(hist_item.param.text, hist_item.param.p1.x, hist_item.param.p1.y);
                 break;
             // etc
         };
