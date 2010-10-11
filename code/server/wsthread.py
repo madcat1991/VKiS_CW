@@ -272,8 +272,6 @@ class WebSocketThread(threading.Thread):
             
             #LOCK
             if ('clearall' in datagram['commands']) and this_user.is_super :
-                print this_user.is_super
-                print datagram
                 self.websocket.public_picture_history = []
                 self.broadcast(datagram)
             elif 'clearall' not in datagram['commands']:

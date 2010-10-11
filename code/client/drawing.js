@@ -190,6 +190,68 @@ var prepare_canvas = function (canvas, name) {
         return tool;
     }; // end rectangle
     
+    canvas.tool_set.text_tool = function() { 
+        var tool = this;
+        this.name = 'text_tool';
+        var context = canvas.temp_context;
+        
+        this.text = "";
+        this.started = false;
+        
+        this.prev_pos = {'x': -1, 'y': -1};
+        
+        this.mousedown = function (ev) {
+            if ( tool.started ){
+                //сохранение и очищение строки
+                tool.save_and_clear();
+            }
+            tool.started = true;
+            tool.prev_pos = {'x': ev._x, 'y': ev._y};
+        };
+        
+        this.keydown = function (ev) {
+            if (!tool.started){
+                return;
+            }
+        
+            if (ev.keynum = 8){
+                if (tool.text.length > 0){
+                    tool.text = tool.text.substring(0,tool.text.length-1);
+                }
+            }                
+            else if (ev.keynum = 13){
+                tool.save_and_clear();
+            }
+            else{
+                letterAndDigitsCheck = "[\d\w]";
+                keychar = String.fromCharCode(keynum);
+                if (letterAndDigitsCheck.test(keychar)){
+                    tool.text += keychar;    
+                }
+            }
+        
+            context.clearRect(0, 0, canvas.temp_element.width, canvas.temp_element.height);
+             
+            if (tool.text.length == 0){
+                return;
+            }
+            
+            context.font = 'italic 30px sans serif';            
+            context.fillText(tool.text, tool.prev_pos.x, tool.prev_pos.y);
+        };
+        
+        this.save_and_clear = function () {
+            if (tool.started) {
+                tool.started = false;
+                canvas.append_to_history({'p1': tool.prev_pos, 'text': tool.text });
+                canvas.img_update();
+                tool.text = "";
+            }
+        };
+        
+        return tool;
+    }; // end text_tool
+    
     // панель инструментов
     for (var toolname in canvas.tool_set) {
         (function (tool_name) {
@@ -223,6 +285,23 @@ var prepare_canvas = function (canvas, name) {
     canvas.user_tool = new canvas.tool_set['pencil']();
     canvas.set_color("#000000");
     
+    canvas.keyboard_handler = function(event){
+        if(event.which){    // Netscape/Firefox/Opera
+            event.keynum = event.which;
+        }
+        else{   //IE = window.event
+            event.keynum = event.keyCode;
+        }
+        
+        // Call the event handler of the tool.
+        var func = canvas.user_tool[event.type];
+        if (func) {
+            func(event);
+        } else { 
+            alert('no func for ' + event.type);
+        }
+    };
+    
     canvas.mouse_handler = function (event) {
         if (event.layerX || event.layerX == 0) { // Firefox
               event._x = event.layerX;
@@ -244,7 +323,7 @@ var prepare_canvas = function (canvas, name) {
     canvas.temp_element.addEventListener('mousedown', canvas.mouse_handler, false);
     canvas.temp_element.addEventListener('mousemove', canvas.mouse_handler, false);
     canvas.temp_element.addEventListener('mouseup',   canvas.mouse_handler, false);
-    canvas.temp_element.addEventListener('keyup',   canvas.mouse_handler, false);
+    canvas.temp_element.addEventListener('keydown',   canvas.keyboard_handler, false);
     
     canvas.execute_command = function (hist_item) {
         // при интерпретации входящих команд рисуем сразу на основном canvas
@@ -271,6 +350,10 @@ var prepare_canvas = function (canvas, name) {
                 height = Math.abs(hist_item.param.p1.y - hist_item.param.p2.y);
                             
                 canvas.context.strokeRect(x, y, width, height);
+                break;
+            case 'text_tool':
+                context.font = 'italic 30px sans serif';            
+                context.fillText(hist_item.param.text, hist_item.param.p1.x, hist_item.param.p1.y);
                 break;
             // etc
         };
