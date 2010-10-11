@@ -79,6 +79,11 @@ var datagram_recieved = function (packet) {
                 $('userNickInfo').innerHTML = "Вас зовут <b>" + window.chat_nick + "</b>" +
                     //" (<a href='#' onclick='renameNickname()'>сменить ник</a>)";
                     "";
+                if (datagram.is_super)
+                    $('clear_all_btn').style.visibility = 'visible';
+                else
+                    $('clear_all_btn').style.visibility = 'hidden';
+                    
                 $('whoIsHere').innerHTML = 
                     " <a href='#' onclick='toggle_people_list()'>кто здесь? (<span id='people_count'>0</span>)</a>"; 
                 //обновляем список пользоватлей и запускаем таймер,
@@ -111,7 +116,7 @@ var datagram_recieved = function (packet) {
             // заполнить список людей
             for(i in datagram.list){
                 $('list_of_people').innerHTML += "<div>" + datagram.list[i].nick + 
-                    "<div style='float: right; width: 15px; height: 15px; border: #000 solid 1px; background-color:" + 
+                    "<div style='float: left; width: 15px; height: 15px; border: #000 solid 1px; background-color:" + 
                     datagram.list[i].color + ";'/></div>";
                 // TODO : отображать цвет!!!
             }

@@ -15,6 +15,7 @@ var canvases = {
     },
 };
 
+var font_thingy = 'normal 18px sans serif';
 
 var prepare_canvas = function (canvas, name) {
     canvas.name = name;
@@ -195,54 +196,38 @@ var prepare_canvas = function (canvas, name) {
         this.name = 'text_tool';
         var context = canvas.temp_context;
         
-        this.text = "";
-        this.started = false;
+        this.text = prompt("Введите текст:", "");
+        this.started = (this.text != null);
         
         this.prev_pos = {'x': -1, 'y': -1};
         
         this.mousedown = function (ev) {
-            if ( tool.started ){
-                //сохранение и очищение строки
-                tool.save_and_clear();
+            if (!tool.started) {
+                tool.text = prompt("Введите текст:", "");
+                tool.started = (tool.text != null);
             }
-            tool.started = true;
-            tool.prev_pos = {'x': ev._x, 'y': ev._y};
         };
         
-        canvas.temp_element.keydown = function (ev) {
-            if (!tool.started){
+        
+        this.mousemove = function (ev) {
+            if (!tool.started)  
                 return;
-            }
-        
-            if (ev.keynum == 8){
-                if (tool.text.length > 0){
-                    tool.text = tool.text.substring(0,tool.text.length-1);
-                }
-            }                
-            else if (ev.keynum == 13){
-                tool.save_and_clear();
-            }
-            else{
-                letterAndDigitsCheck = "[\d\w]";
-                keychar = String.fromCharCode(keynum);
-                if (letterAndDigitsCheck.test(keychar)){
-                    tool.text += keychar;    
-                }
-            }
-        
+                
+            tool.prev_pos = {'x': ev._x, 'y': ev._y};
             context.clearRect(0, 0, canvas.temp_element.width, canvas.temp_element.height);
-             
-            if (tool.text.length == 0){
-                return;
-            }
-            
-            context.font = 'italic 30px sans serif';            
+            context.font = font_thingy; 
             context.fillText(tool.text, tool.prev_pos.x, tool.prev_pos.y);
         };
         
-        this.mousemove = function (ev) {};
+        this.mouseup = function (ev) {
+            if (!tool.started)  
+                return;
+                
+            canvas.append_to_history({'p1': tool.prev_pos, 'text': tool.text });
+            canvas.img_update();
         
-        this.mouseup = function (ev) {};
+            tool.started = false;
+        };
         
         this.save_and_clear = function () {
             if (tool.started) {
@@ -356,7 +341,7 @@ var prepare_canvas = function (canvas, name) {
                 canvas.context.strokeRect(x, y, width, height);
                 break;
             case 'text_tool':
-                canvas.context.font = 'italic 30px sans serif';            
+                canvas.context.font = font_thingy;            
                 canvas.context.fillText(hist_item.param.text, hist_item.param.p1.x, hist_item.param.p1.y);
                 break;
             // etc

@@ -5,7 +5,6 @@ import datetime
 import re
 import json
 
-from utils import Util
 
 
 # штука для преобразования чисел в строку байтов в big-endian
@@ -220,7 +219,7 @@ class WebSocketThread(threading.Thread):
                 user_already_on_server = self.websocket.is_user_on_server(datagram['nick'])
                 password_correct = (self.websocket.registered_users[str_nick]['password'] == datagram['password'])
             else:
-                self.websocket.register_new_user(datagram['nick'], datagram['password'],Util.get_random_rgb_color_string())
+                self.websocket.register_new_user(datagram['nick'], datagram['password'])
                 new_user_registered = True
                 password_correct = True
                 user_already_on_server = False
@@ -229,12 +228,13 @@ class WebSocketThread(threading.Thread):
             
             if successfull_login:
                 # приветствуем нового участника!
-                self.send_private( {'type': 'login_result', 'logged_in': True, 'color': self.websocket.registered_users[str_nick]['color']}, this_user) # M11
-                
                 this_user.is_super = self.websocket.registered_users[str_nick]['is_super']
                 this_user.color = self.websocket.registered_users[str_nick]['color']
-                
                 this_user.nick = datagram['nick']
+                
+                self.send_private( {'type': 'login_result', 'logged_in': True, 'is_super': this_user.is_super,
+                    'color': this_user.color}, this_user) # M11
+                
                 self.broadcast({'type': 'notify', 'subtype': 'user_joined', 'user': datagram['nick']})
                 #отправка последних N сообщений новому пользователю
                 if self.websocket.last_n_messages != []:
@@ -275,7 +275,6 @@ class WebSocketThread(threading.Thread):
                 self.websocket.public_picture_history = []
                 self.broadcast(datagram)
             elif 'clearall' not in datagram['commands']:
-                print datagram
                 self.websocket.public_picture_history.extend(datagram['commands'])
                 self.broadcast(datagram, except_user=this_user)
 

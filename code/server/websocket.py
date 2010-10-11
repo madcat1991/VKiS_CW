@@ -6,6 +6,7 @@ from user import User
 import random
 import datetime
 import shelve
+import utils
 
 LAST_N_MESSAGES_MAX_COUNT = 5
 
@@ -27,9 +28,11 @@ class WebSocket():
         self.chat_log_file.write(log_message.encode('utf-8'))
         self.chat_log_file.flush()
         
-    def register_new_user(self, nick, password, color):
+    def register_new_user(self, nick, password):
         """ Регистрация нового пользователя """
-        # TODO : выбрать цвет
+        
+        color = utils.get_random_rgb_color_string()
+        
         is_super = (nick == 'Admin')
         record = {'nick': nick, 'password': password, 'color': color, 'is_super': is_super}
         
