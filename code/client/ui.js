@@ -12,9 +12,9 @@ var logg = function(cellMessage, cellName, cellTime) {
     
     var text = "";
     if (!cellName) {
-        text = "<div class='chatString " + rowclass + "'>" + cellMessage + "</div>";
+        text = "<div class='chatString " + rowclass + " " + $('style_select').value + "'>" + cellMessage + "</div>";
     } else {
-        text = "<div class='chatString " + rowclass + "'>\n" + 
+        text = "<div class='chatString " + rowclass + " " + $('style_select').value + "'>\n" + 
                "  <div class='usernick'>" + cellName + ' (' + cellTime + ') ' + "</div>\n" + 
                "  <div class='messageBody'>" + cellMessage + "</div\n>" + 
                "</div>\n";
@@ -49,13 +49,13 @@ var toggle_drawing_tabs = function (event) {
     if ($('drawing_public').style.display == 'block') {
         $('drawing_public').style.display = 'none';
         $('drawing_private').style.display = 'block';
-        $('dp_tab_switch_public').className = "tab_switcher_span inactive_tab";
-        $('dp_tab_switch_private').className = "tab_switcher_span active_tab";
+        $('dp_tab_switch_public').className = "tab_switcher_span inactive_tab" + " " + $('style_select').value;
+        $('dp_tab_switch_private').className = "tab_switcher_span active_tab" + " " + $('style_select').value;
     } else {
         $('drawing_public').style.display = 'block';
         $('drawing_private').style.display = 'none';
-        $('dp_tab_switch_public').className = "tab_switcher_span active_tab";
-        $('dp_tab_switch_private').className = "tab_switcher_span inactive_tab";
+        $('dp_tab_switch_public').className = "tab_switcher_span active_tab" + " " + $('style_select').value;
+        $('dp_tab_switch_private').className = "tab_switcher_span inactive_tab" + " " + $('style_select').value;
     }
 };
 
@@ -135,3 +135,50 @@ $('login_form').onsubmit = function () {
     
     return false; // предотвратить отправку формы
 };
+
+function styleOnChange(){
+    document.body.setAttribute("class", $('style_select').value);
+    $('chatLog').setAttribute("class", $('style_select').value);
+    $('list_of_people').setAttribute("class", $('style_select').value);
+    $('drawingPanel').setAttribute("class", $('style_select').value);
+    $('drawingPanel_tabs').setAttribute("class", $('style_select').value);
+    
+    curClassElements = document.getElementsByClassName('chatRow_foreign');
+    for( i = 0; i < curClassElements.length; i++ )
+    {
+        
+        curClassElements[i].setAttribute("class", curClassElements[i].getAttribute("class") + " " + $('style_select').value)
+    }
+    
+    curClassElements = document.getElementsByClassName('chatRow_own');
+    for( i = 0; i < curClassElements.length; i++ )
+    {
+        curClassElements[i].setAttribute("class", curClassElements[i].getAttribute("class") + " " + $('style_select').value)
+    }
+    
+    curClassElements = document.getElementsByClassName('active_tab');
+    for( i = 0; i < curClassElements.length; i++ )
+    {
+        curClassElements[i].setAttribute("class", curClassElements[i].getAttribute("class") + " " + $('style_select').value)
+    }
+    
+    curClassElements = document.getElementsByClassName('draw_toolbar');
+    for( i = 0; i < curClassElements.length; i++ )
+    {
+        curClassElements[i].setAttribute("class", curClassElements[i].getAttribute("class") + " " + $('style_select').value)
+    }
+    
+    curClassElements = document.getElementsByClassName('button');
+    for( i = 0; i < curClassElements.length; i++ )
+    {
+        curClassElements[i].setAttribute("class", curClassElements[i].getAttribute("class") + " " + $('style_select').value)
+    }
+
+    curClassElements = document.getElementsByClassName('color_selector_button');
+    for( i = 0; i < curClassElements.length; i++ )
+    {
+        curClassElements[i].setAttribute("class", curClassElements[i].getAttribute("class") + " " + $('style_select').value)
+    }
+    
+    return false;
+}

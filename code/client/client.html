@@ -1,9 +1,9 @@
 ﻿<head>
     <link rel="stylesheet" href="chat.css" type="text/css"/>
 </head>
-<body bgcolor="#FF5500">
+<body class='orange' onload='styleOnChange()'>
 <div>
-    <h1>Девайс <a href='#' onclick='reconnect_prompt()'>сетевой</a> двухканальный прямого действия, оранжевый (0.72а)</h1>
+    <h1>Девайс <a href='#' onclick='reconnect_prompt()'>сетевой</a> двухканальный прямого действия(0.72а)</h1>
 
     <table>
     <tr>
@@ -48,6 +48,15 @@
         </td>
     </tr>
     </table>
+    
+    <div id='style'>
+        <label>Стиль: <select id='style_select' onchange='styleOnChange();'>
+            <option value='orange'>Оранжевый</option>
+            <option value='grey'>Серый</option>
+            <option value='blue'>Голубой</option>
+            </select>
+        </label>
+    </div>
     
     <div id='modal_window_container'>
         <div id='modal_window'>
