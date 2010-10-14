@@ -1,0 +1,91 @@
+body
+{
+    background-color: #FF5500;
+}
+
+#chatLog
+{
+    width: 490px; 
+    max-width: 490px;
+    word-wrap: break-word;
+    height: 350px; 
+    overflow: auto; 
+    background-color: #FF8833;
+}
+
+#list_of_people
+{
+    width: 240px;
+    max-height: 400px;
+    z-index: 599;
+    position: absolute;
+    display: none;
+    overflow: auto;
+    padding-bottom: 40px;
+    border: solid 1px yellow;
+    background-color: #FAD193;
+}
+
+.chatRow_foreign
+{
+    background-color: #FF8833;
+}
+
+.chatRow_own
+{
+    background-color: #FF9944;
+}
+
+#drawingPanel
+{
+    float: right;
+    width: 500px; 
+    height: 350px; 
+    background-color: #F5F5A5;
+}
+
+#drawingPanel_tabs
+{
+    ~~~height: 20px;
+    width: 100%;
+    -webkit-user-select:none;
+    -moz-user-select:none;
+    background-color: #DBB919;
+    border-bottom: solid 2px black;
+}
+
+.active_tab
+{
+    border-bottom: none;
+    background-color: yellow;
+}
+
+.draw_toolbar
+{
+    height:30px;
+    background-color: yellow;
+}
+
+.button
+{
+    height: 26px;
+    width: 26px;
+    cursor: hand;
+    margin: 1px;
+    border: solid 1px green;
+    background-color: yellow;
+}
+
+.button:hover
+{
+    background-color: red;
+}
+
+.color_selector_button
+{
+    height: 20px;
+    min-width: 20px;
+    cursor: hand;
+    margin: 1px;
+    border: solid 1px green;
+}

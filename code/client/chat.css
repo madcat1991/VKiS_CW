@@ -1,37 +1,3 @@
-body.orange
-{
-    background-color: #FF5500;
-}
-body.grey
-{
-    background-color: #878787;
-}
-body.blue
-{
-    background-color: #FF5500;
-}
-
-#chatLog
-{
-    width: 490px; 
-    max-width: 490px;
-    word-wrap: break-word;
-    height: 350px; 
-    overflow: auto; 
-}
-#chatLog.orange
-{
-    background-color: #FF8833;
-}
-#chatLog.grey
-{
-    background-color: #B6B3B3;
-}
-#chatLog.blue
-{
-    background-color: #FF8833;
-}
-
 #inputbox
 {
     padding: 2px;
@@ -42,32 +8,6 @@ body.blue
     max-height: 128px; /* 6 lines */
     overflow: auto;
     background-color: white;
-}
-
-#list_of_people
-{
-    width: 240px;
-    max-height: 400px;
-    z-index: 599;
-    position: absolute;
-    display: none;
-    overflow: auto;
-    padding-bottom: 40px;
-}
-#list_of_people.orange
-{
-    border: solid 1px yellow;
-    background-color: #FAD193;
-}
-#list_of_people.grey
-{
-    border: solid 1px #303030;
-    background-color: #969696;
-}
-#list_of_people.blue
-{
-    border: solid 1px yellow;
-    background-color: #FAD193;
 }
 
 A[href="#"] 
@@ -90,74 +30,6 @@ A[href="#"]
     margin-left: 20px;
 }
 
-.chatRow_foreign.orange
-{
-    background-color: #FF8833;
-}
-.chatRow_foreign.grey
-{
-    background-color: #B6B3B3;
-}
-.chatRow_foreign.blue
-{
-    background-color: #FF8833;
-}
-
-.chatRow_own.orange
-{
-    background-color: #FF9944;
-}
-.chatRow_own.grey
-{
-    background-color: #BFBFBF;
-}
-.chatRow_own.blue
-{
-    background-color: #FF9944;
-}
-
-#drawingPanel
-{
-    float: right;
-    width: 500px; 
-    height: 350px; 
-}
-#drawingPanel.orange
-{
-    background-color: #F5F5A5;
-}
-#drawingPanel.grey
-{
-    background-color: #E4E4E4;
-}
-#drawingPanel.blue
-{
-    background-color: #F5F5A5;
-}
-
-#drawingPanel_tabs
-{
-    ~~~height: 20px;
-    width: 100%;
-    -webkit-user-select:none;
-    -moz-user-select:none;
-}
-#drawingPanel_tabs.orange
-{
-    background-color: #DBB919;
-    border-bottom: solid 2px black;
-}
-#drawingPanel_tabs.grey
-{
-    background-color: #615F64;
-    border-bottom: solid 2px black;
-}
-#drawingPanel_tabs.blue
-{
-    background-color: #DBB919;
-    border-bottom: solid 2px black;
-}
-
 .tab_switcher_span
 {
     cursor: hand;
@@ -165,23 +37,6 @@ A[href="#"]
     font-family: sans-serif;
     font-size: 80%;
     border: solid 2px black;
-}
-
-.active_tab
-{
-    border-bottom: none;
-}
-.active_tab.orange
-{
-    background-color: yellow;
-}
-.active_tab.grey
-{
-    background-color: #B8B8B8;
-}
-.active_tab.blue
-{
-    background-color: yellow;
 }
 
 .inactive_tab
@@ -210,59 +65,6 @@ A[href="#"]
     cursor: crosshair;
 }
 
-.draw_toolbar
-{
-    height:30px;
-}
-.draw_toolbar.orange
-{
-    background-color: yellow;
-}
-.draw_toolbar.grey
-{
-    background-color: #B8B8B8;
-}
-.draw_toolbar.blue
-{
-    background-color: yellow;
-}
-
-.button
-{
-    height: 26px;
-    width: 26px;
-    cursor: hand;
-    margin: 1px;
-}
-.button.orange
-{
-    border: solid 1px green;
-    background-color: yellow;
-}
-.button.grey
-{
-    border: solid 1px black;
-    background-color: #B8B8B8;
-}
-.button.blue
-{
-    border: solid 1px green;
-    background-color: yellow;
-}
-
-.button:hover.orange
-{
-    background-color: red;
-}
-.button:hover.grey
-{
-    background-color: #E9E9E9;
-}
-.button:hover.blue
-{
-    background-color: red;
-}
-
 .button_pencil
 {
     content: "P"; /* doesn't work :-( */
@@ -270,26 +72,6 @@ A[href="#"]
 
 .button_line 
 {
-}
-
-.color_selector_button
-{
-    height: 20px;
-    min-width: 20px;
-    cursor: hand;
-    margin: 1px;
-}
-.color_selector_button.orange
-{
-    border: solid 1px green;
-}
-.color_selector_button.grey
-{
-    border: solid 1px green;
-}
-.color_selector_button.blue
-{
-    border: solid 1px green;
 }
 
 #modal_window_container

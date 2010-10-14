@@ -1,0 +1,91 @@
+body
+{
+    background-color: #878787;
+}
+
+#chatLog
+{
+    width: 490px; 
+    max-width: 490px;
+    word-wrap: break-word;
+    height: 350px; 
+    overflow: auto; 
+    background-color: #B6B3B3;
+}
+
+#list_of_people
+{
+    width: 240px;
+    max-height: 400px;
+    z-index: 599;
+    position: absolute;
+    display: none;
+    overflow: auto;
+    padding-bottom: 40px;
+    border: solid 1px #303030;
+    background-color: #969696;
+}
+
+.chatRow_foreign
+{
+    background-color: #B6B3B3;
+}
+
+.chatRow_own
+{
+    background-color: #BFBFBF;
+}
+
+#drawingPanel
+{
+    float: right;
+    width: 500px; 
+    height: 350px; 
+    background-color: #E4E4E4;
+}
+
+#drawingPanel_tabs
+{
+    ~~~height: 20px;
+    width: 100%;
+    -webkit-user-select:none;
+    -moz-user-select:none;
+    background-color: #615F64;
+    border-bottom: solid 2px black;
+}
+
+.active_tab
+{
+    border-bottom: none;
+    background-color: #B8B8B8;
+}
+
+.draw_toolbar
+{
+    height:30px;
+    background-color: #B8B8B8;
+}
+
+.button
+{
+    height: 26px;
+    width: 26px;
+    cursor: hand;
+    margin: 1px;
+    border: solid 1px black;
+    background-color: #B8B8B8;
+}
+
+.button:hover
+{
+    background-color: #E9E9E9;
+}
+
+.color_selector_button
+{
+    height: 20px;
+    min-width: 20px;
+    cursor: hand;
+    margin: 1px;
+    border: solid 1px green;
+}

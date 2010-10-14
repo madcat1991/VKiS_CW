@@ -136,48 +136,22 @@ $('login_form').onsubmit = function () {
     return false; // предотвратить отправку формы
 };
 
-function styleOnChange(){
-    document.body.setAttribute("class", $('style_select').value);
-    $('chatLog').setAttribute("class", $('style_select').value);
-    $('list_of_people').setAttribute("class", $('style_select').value);
-    $('drawingPanel').setAttribute("class", $('style_select').value);
-    $('drawingPanel_tabs').setAttribute("class", $('style_select').value);
-    
-    curClassElements = document.getElementsByClassName('chatRow_foreign');
-    for( i = 0; i < curClassElements.length; i++ )
-    {
-        
-        curClassElements[i].setAttribute("class", curClassElements[i].getAttribute("class") + " " + $('style_select').value)
-    }
-    
-    curClassElements = document.getElementsByClassName('chatRow_own');
-    for( i = 0; i < curClassElements.length; i++ )
-    {
-        curClassElements[i].setAttribute("class", curClassElements[i].getAttribute("class") + " " + $('style_select').value)
-    }
-    
-    curClassElements = document.getElementsByClassName('active_tab');
-    for( i = 0; i < curClassElements.length; i++ )
-    {
-        curClassElements[i].setAttribute("class", curClassElements[i].getAttribute("class") + " " + $('style_select').value)
-    }
-    
-    curClassElements = document.getElementsByClassName('draw_toolbar');
-    for( i = 0; i < curClassElements.length; i++ )
-    {
-        curClassElements[i].setAttribute("class", curClassElements[i].getAttribute("class") + " " + $('style_select').value)
-    }
-    
-    curClassElements = document.getElementsByClassName('button');
-    for( i = 0; i < curClassElements.length; i++ )
-    {
-        curClassElements[i].setAttribute("class", curClassElements[i].getAttribute("class") + " " + $('style_select').value)
-    }
+function clientOnLoad(){
+    var headId = document.getElementsByTagName('head')[0];
+    var cssNode = document.createElement('link');
+    cssNode.type = 'text/css';
+    cssNode.rel = 'stylesheet';
+    cssNode.href = $('style_select').value + '_style.css';
+    cssNode.id = 'style';
+    headId.appendChild(cssNode);
+}
 
-    curClassElements = document.getElementsByClassName('color_selector_button');
-    for( i = 0; i < curClassElements.length; i++ )
-    {
-        curClassElements[i].setAttribute("class", curClassElements[i].getAttribute("class") + " " + $('style_select').value)
+function styleOnChange(){ 
+    var allsuspects = document.getElementsByTagName('link');
+    for (var i=allsuspects.length; i>=0; i--){
+        if (allsuspects[i] && allsuspects[i].getAttribute('id') == 'style'){
+            allsuspects[i].setAttribute('href', $('style_select').value + '_style.css');
+        }          
     }
     
     return false;
