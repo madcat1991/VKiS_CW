@@ -175,7 +175,7 @@ var prepare_canvas = function (canvas, name) {
                 return;
             }
                             
-            context.strokeRect(x, y, width, height);
+            context.strokeRect(x + 0.5, y + 0.5, width, height);
         };
         
         this.mouseup = function (ev) {
@@ -338,7 +338,7 @@ var prepare_canvas = function (canvas, name) {
                 width = Math.abs(hist_item.param.p1.x - hist_item.param.p2.x);
                 height = Math.abs(hist_item.param.p1.y - hist_item.param.p2.y);
                             
-                canvas.context.strokeRect(x, y, width, height);
+                canvas.context.strokeRect(x + 0.5, y + 0.5, width, height);
                 break;
             case 'text_tool':
                 canvas.context.font = font_thingy;            
